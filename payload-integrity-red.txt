@@ -1,1 +1,0 @@
-RED: current main fails payload integrity because sjhs-payload-2.js blob != 04180a60bdbbef44697d59f19ea9aefbeb3b7f95. This corrupts the gzip stream and reproduces the deployed Failed to Decode Data error.
