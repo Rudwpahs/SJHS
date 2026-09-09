@@ -1,0 +1,1 @@
+GREEN target: sjhs-payload-2.js must point to verified blob 04180a60bdbbef44697d59f19ea9aefbeb3b7f95 so the concatenated gzip stream decodes to source SHA-256 3b1a36475caebac8eebc0923c176bdb5ff0a46eb77e1704c45ec47971d053232.
