@@ -1,0 +1,1 @@
+Root cause confirmed: payload 2 on main does not match the verified gzip chunk. Fix is to repoint sjhs-payload-2.js to blob 04180a60bdbbef44697d59f19ea9aefbeb3b7f95 without changing loader behavior.
