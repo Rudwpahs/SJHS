@@ -132,3 +132,30 @@ test('34 app state wires semantic hierarchy and recursive focus scope', () => {
   assert.match(source, /function enterFocus\(id\)/);
   assert.match(source, /function leaveFocus\(\)/);
 });
+
+
+test('35 inspector exposes accessible enter and back focus controls', () => {
+  const source = readSource();
+  assert.match(source, /data-action="enter-focus"/);
+  assert.match(source, /data-action="leave-focus"/);
+  assert.match(source, /\.focus-action[\s\S]*min-height:\s*var\(--control-hit-size\)/);
+});
+
+test('36 keyboard supports Shift+Enter drill-in and Escape scope exit', () => {
+  const source = readSource();
+  assert.match(source, /event\.shiftKey\s*&&\s*event\.key\s*===\s*['"]Enter['"]/);
+  assert.match(source, /if \(state\.selectedId\) clearSelection\(\);[\s\S]*else if \(state\.focusPath\.length\) leaveFocus\(\);/);
+});
+
+test('37 search and cross-links can escape a recursive scope', () => {
+  const source = readSource();
+  assert.match(source, /function ensureGlobalIfOutsideScope\(nodeId\)/);
+  assert.match(source, /ensureGlobalIfOutsideScope\(node\.id\);[\s\S]*focusNode\(node\)/);
+  assert.match(source, /ensureGlobalIfOutsideScope\(nodeButton\.dataset\.node\)/);
+});
+
+test('38 STREET zoom ceiling can recurse into selected semantic child world', () => {
+  const source = readSource();
+  assert.match(source, /zoomBand\(state\.zoom\)\s*===\s*['"]STREET['"]/);
+  assert.match(source, /enterFocus\(state\.selectedId\)/);
+});
