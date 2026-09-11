@@ -31,15 +31,15 @@ https://rudwpahs.github.io/SJHS/
 
 현재 편집 가능한 source of truth는 `src/SJHS_Memory_Palace_UIUX.html`입니다.
 
-- size: 167,028 bytes
-- SHA-256: `6cbf673c13c4a07d57855686d12991847fdf350b9e360bc58e9090dc261ce323`
+- size: 167,375 bytes
+- SHA-256: `47bc095f766b788a56eb1de4a92061c2467fab108dc62395530ed68c10fbaa06`
 
 루트의 과거 `index.html` / `sjhs-payload-*.js` 파일은 구조 복원 이전의 legacy snapshot이며 더 이상 Pages 배포 입력으로 사용하지 않습니다. 현재 배포는 canonical source를 검증하고 `dist/`를 새로 생성합니다.
 
 Verification commands:
 
 ```bash
-npm test          # 40 automated tests
+npm test          # 42 automated tests
 npm run audit     # source, graph, accessibility and dependency gates
 npm run build     # four-chunk Pages package -> dist/
 npm run verify    # all gates + byte-for-byte payload restoration
@@ -85,7 +85,7 @@ This prevents a stale root payload from being deployed instead of the current ca
 ## Verification snapshot
 
 Recursive semantic zoom feature verification:
-- 40/40 automated tests expected after release-wiring gate
+- 42/42 automated tests including semantic-navigation review regression
 - graph remains 198 concepts / 291 relations / 24 curriculum units
 - canonical coordinates are unchanged by focus operations
 - UI audit and generated payload round-trip are required before deployment

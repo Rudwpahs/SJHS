@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const sourcePath = path.join(root, 'src', 'SJHS_Memory_Palace_UIUX.html');
-export const expectedSourceSha = '6cbf673c13c4a07d57855686d12991847fdf350b9e360bc58e9090dc261ce323';
+export const expectedSourceSha = '47bc095f766b788a56eb1de4a92061c2467fab108dc62395530ed68c10fbaa06';
 
 export function readSource() { return fs.readFileSync(sourcePath, 'utf8'); }
 export function extractScript(source = readSource()) {

@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
-import { readSource, loadRuntime, expectedSourceSha } from './helpers.mjs';
+import vm from 'node:vm';
+import { readSource, loadRuntime, expectedSourceSha, extractScript } from './helpers.mjs';
 
 const sha256 = text => crypto.createHash('sha256').update(text).digest('hex');
 
@@ -158,4 +159,29 @@ test('38 STREET zoom ceiling can recurse into selected semantic child world', ()
   const source = readSource();
   assert.match(source, /zoomBand\(state\.zoom\)\s*===\s*['"]STREET['"]/);
   assert.match(source, /enterFocus\(state\.selectedId\)/);
+});
+
+
+test('41 semantic navigation level is relative inside a focus scope', () => {
+  const script = extractScript();
+  const context = { console };
+  vm.createContext(context);
+  vm.runInContext(`${script}\n;globalThis.__LEVEL__ = typeof semanticLevelForNode === 'function' ? semanticLevelForNode : null; globalThis.__H__ = buildSemanticHierarchy;`, context);
+  assert.equal(typeof context.__LEVEL__, 'function');
+  const fixture = {
+    nodes: [{id:'r',level:3},{id:'c',level:4},{id:'g',level:5}],
+    edges: [
+      {source:'r',target:'c',type:'PART_OF',strength:1},
+      {source:'c',target:'g',type:'PART_OF',strength:1},
+    ],
+  };
+  const hierarchy = context.__H__(fixture);
+  assert.equal(context.__LEVEL__(hierarchy, 'r', fixture.nodes[2]), 2);
+  assert.equal(context.__LEVEL__(hierarchy, null, fixture.nodes[2]), 5);
+});
+
+test('42 focusNode uses semantic navigation depth rather than absolute node level', () => {
+  const source = readSource();
+  assert.match(source, /const semanticLevel\s*=\s*semanticLevelForNode\(semanticHierarchy,\s*state\.focusRootId,\s*node\)/);
+  assert.match(source, /zoomThresholdForLevel\(semanticLevel\)/);
 });

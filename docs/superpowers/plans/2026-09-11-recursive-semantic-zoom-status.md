@@ -5,8 +5,8 @@
 - Task 3 accessible drill-in navigation: complete — 38/38 tests + audit/build/round-trip at checkpoint
 - Task 4 release wiring: complete — Pages now verifies current canonical source and deploys `dist/`; stale payload recovery command retired
 - Root legacy `index.html` and `sjhs-payload-*.js` remain unchanged on the feature branch
-- Current canonical source: 167,028 bytes
-- Current canonical source SHA-256: `6cbf673c13c4a07d57855686d12991847fdf350b9e360bc58e9090dc261ce323`
+- Current canonical source: 167,375 bytes
+- Current canonical source SHA-256: `47bc095f766b788a56eb1de4a92061c2467fab108dc62395530ed68c10fbaa06`
 - Graph contract unchanged: 198 concepts / 291 relations / 24 curriculum units
 
-Final gate: pull-request-triggered `npm run verify` must pass before merge.
+Code-review fix: semantic node navigation now uses relative depth inside focus scopes. Final pull-request-triggered `npm run verify` must pass before merge.

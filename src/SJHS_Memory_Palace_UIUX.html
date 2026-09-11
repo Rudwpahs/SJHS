@@ -716,6 +716,13 @@ function hierarchyDepthFrom(hierarchy, rootId, nodeId) {
   return null;
 }
 
+function semanticLevelForNode(hierarchy, focusRootId, node) {
+  if (!node) return 0;
+  if (!focusRootId) return node.level ?? 0;
+  const relativeDepth = hierarchyDepthFrom(hierarchy, focusRootId, node.id);
+  return relativeDepth ?? node.level ?? 0;
+}
+
 function getScopedVisibleNodes(graph, hierarchy, zoom, filters = {}, focusRootId = null) {
   if (!focusRootId) return getVisibleNodes(graph, zoom, filters);
   return graph.nodes.filter(node => {
@@ -1267,7 +1274,8 @@ function init() {
 
   function focusNode(node) {
     if (!node) return;
-    const needed = zoomThresholdForLevel(node.level) + 0.28;
+    const semanticLevel = semanticLevelForNode(semanticHierarchy, state.focusRootId, node);
+    const needed = zoomThresholdForLevel(semanticLevel) + 0.28;
     state.zoom = Math.max(state.zoom, Math.min(5.25, needed));
     const targetX = window.innerWidth * (window.innerWidth > 980 ? 0.42 : 0.5);
     const targetY = window.innerHeight * (window.innerWidth > 980 ? 0.50 : 0.42);
