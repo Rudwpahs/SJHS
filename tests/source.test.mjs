@@ -33,3 +33,48 @@ test('23 nextZoom clamps lower bound', () => assert.equal(loadRuntime().nextZoom
 test('24 nextZoom clamps upper bound', () => assert.equal(loadRuntime().nextZoom(6,10),6));
 test('25 explicit theme preference wins', () => { const {resolveThemePreference}=loadRuntime(); assert.equal(resolveThemePreference('light',true),'light'); assert.equal(resolveThemePreference('dark',false),'dark'); });
 test('26 world/screen transforms round-trip', () => { const {worldToScreenPoint,screenToWorldPoint}=loadRuntime(); const state={zoom:2.25,panX:413,panY:287}; const p={x:-91.2,y:44.5}; const q=screenToWorldPoint(worldToScreenPoint(p,state),state); assert.ok(Math.abs(q.x-p.x)<1e-9); assert.ok(Math.abs(q.y-p.y)<1e-9); });
+
+
+test('27 hierarchy prefers PART_OF over fallback relations', () => {
+  const { buildSemanticHierarchy } = loadRuntime();
+  const fixture = {
+    nodes: [
+      { id:'root', level:0 },
+      { id:'other', level:1 },
+      { id:'child', level:2 },
+    ],
+    edges: [
+      { source:'other', target:'child', type:'CAUSES', strength:5 },
+      { source:'root', target:'child', type:'PART_OF', strength:1 },
+    ],
+  };
+  assert.equal(buildSemanticHierarchy(fixture).parentById.get('child'), 'root');
+});
+
+test('28 fallback hierarchy is deterministic and only climbs level', () => {
+  const { buildSemanticHierarchy } = loadRuntime();
+  const fixture = {
+    nodes: [
+      { id:'a', level:1 },
+      { id:'b', level:1 },
+      { id:'c', level:2 },
+    ],
+    edges: [
+      { source:'b', target:'c', type:'CAUSES', strength:4 },
+      { source:'a', target:'c', type:'CAUSES', strength:4 },
+    ],
+  };
+  assert.equal(buildSemanticHierarchy(fixture).parentById.get('c'), 'a');
+});
+
+test('29 hierarchy descendants are transitively indexed', () => {
+  const { buildSemanticHierarchy } = loadRuntime();
+  const fixture = {
+    nodes: [{id:'a',level:0},{id:'b',level:1},{id:'c',level:2}],
+    edges: [
+      {source:'a',target:'b',type:'PART_OF',strength:1},
+      {source:'b',target:'c',type:'PART_OF',strength:1},
+    ],
+  };
+  assert.deepEqual([...buildSemanticHierarchy(fixture).descendantsById.get('a')].sort(), ['b','c']);
+});

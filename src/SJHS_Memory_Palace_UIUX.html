@@ -586,6 +586,69 @@ function buildIndexes(graph) {
   return {nodesById,adjacency};
 }
 
+const SEMANTIC_PARENT_RELATIONS = [
+  'EXPLAINS','CAUSES','REQUIRES','DERIVED_FROM',
+  'REGULATES','CONVERTS_TO','MEASURED_BY','APPLIES_TO',
+];
+
+function buildSemanticHierarchy(graph) {
+  const nodeById = new Map(graph.nodes.map(node => [node.id, node]));
+  const incoming = new Map(graph.nodes.map(node => [node.id, []]));
+  for (const edge of graph.edges) {
+    if (incoming.has(edge.target)) incoming.get(edge.target).push(edge);
+  }
+
+  const parentById = new Map(graph.nodes.map(node => [node.id, null]));
+  const priority = new Map(SEMANTIC_PARENT_RELATIONS.map((type, index) => [type, index]));
+
+  for (const node of graph.nodes) {
+    const candidates = (incoming.get(node.id) ?? [])
+      .map(edge => ({ edge, source: nodeById.get(edge.source) }))
+      .filter(({ source }) => source && source.level < node.level);
+
+    const sortCandidates = (a,b) =>
+      (node.level-a.source.level)-(node.level-b.source.level) ||
+      (b.edge.strength??0)-(a.edge.strength??0) ||
+      a.source.id.localeCompare(b.source.id);
+
+    const partOf = candidates
+      .filter(({ edge }) => edge.type === 'PART_OF')
+      .sort(sortCandidates);
+
+    const fallback = candidates
+      .filter(({ edge }) => priority.has(edge.type))
+      .sort((a,b) => priority.get(a.edge.type)-priority.get(b.edge.type) || sortCandidates(a,b));
+
+    const chosen = partOf[0] ?? fallback[0];
+    if (chosen) parentById.set(node.id, chosen.source.id);
+  }
+
+  const childrenById = new Map(graph.nodes.map(node => [node.id, []]));
+  for (const [childId, parentId] of parentById) {
+    if (parentId) childrenById.get(parentId)?.push(childId);
+  }
+  for (const children of childrenById.values()) children.sort();
+
+  const descendantsById = new Map();
+  for (const node of graph.nodes) {
+    const descendants = new Set();
+    const stack = [...(childrenById.get(node.id) ?? [])];
+    while (stack.length) {
+      const childId = stack.pop();
+      if (descendants.has(childId)) continue;
+      descendants.add(childId);
+      stack.push(...(childrenById.get(childId) ?? []));
+    }
+    descendantsById.set(node.id, descendants);
+  }
+
+  return { parentById, childrenById, descendantsById };
+}
+
+function semanticChildren(hierarchy, nodeId) {
+  return hierarchy.childrenById.get(nodeId) ?? [];
+}
+
 function validateGraph(graph) {
   const nodeIds = new Set();
   const duplicateNodeIds = [];
