@@ -666,20 +666,57 @@ function zoomThresholdForLevel(level) {
   return LEVEL_THRESHOLDS[Math.min(Math.max(level ?? 0,0),LEVEL_THRESHOLDS.length-1)];
 }
 
-function getVisibleNodes(graph, zoom, filters = {}) {
+function nodeMatchesFilters(node, filters = {}) {
   const query=(filters.query ?? '').trim().toLowerCase();
+  if (filters.community && filters.community !== 'all' && node.community !== filters.community) return false;
+  if (filters.curriculum === true && !(node.curriculumRefs?.length)) return false;
+  if (filters.personal === true && !(node.tags?.includes('personal'))) return false;
+  if (filters.modern === true && !(node.tags?.includes('modern') || node.community === 'modern')) return false;
+  if (query) {
+    const haystack=[node.name,node.summary,...(node.tags??[])].join(' ').toLowerCase();
+    if (!haystack.includes(query)) return false;
+  }
+  return true;
+}
+
+function getVisibleNodes(graph, zoom, filters = {}) {
+  return graph.nodes.filter(node =>
+    zoom >= zoomThresholdForLevel(node.level) && nodeMatchesFilters(node, filters));
+}
+
+function hierarchyDepthFrom(hierarchy, rootId, nodeId) {
+  if (!rootId || !nodeId) return null;
+  if (rootId === nodeId) return 0;
+  let depth = 0;
+  let cursor = nodeId;
+  const visited = new Set();
+  while (cursor && !visited.has(cursor)) {
+    visited.add(cursor);
+    cursor = hierarchy.parentById.get(cursor) ?? null;
+    depth += 1;
+    if (cursor === rootId) return depth;
+  }
+  return null;
+}
+
+function getScopedVisibleNodes(graph, hierarchy, zoom, filters = {}, focusRootId = null) {
+  if (!focusRootId) return getVisibleNodes(graph, zoom, filters);
   return graph.nodes.filter(node => {
-    if (zoom < zoomThresholdForLevel(node.level)) return false;
-    if (filters.community && filters.community !== 'all' && node.community !== filters.community) return false;
-    if (filters.curriculum === true && !(node.curriculumRefs?.length)) return false;
-    if (filters.personal === true && !(node.tags?.includes('personal'))) return false;
-    if (filters.modern === true && !(node.tags?.includes('modern') || node.community === 'modern')) return false;
-    if (query) {
-      const haystack=[node.name,node.summary,...(node.tags??[])].join(' ').toLowerCase();
-      if (!haystack.includes(query)) return false;
-    }
-    return true;
+    const relativeDepth = hierarchyDepthFrom(hierarchy, focusRootId, node.id);
+    if (relativeDepth === null) return false;
+    if (zoom < zoomThresholdForLevel(relativeDepth)) return false;
+    return nodeMatchesFilters(node, filters);
   });
+}
+
+function enterFocusPath(path, nodeId, hierarchy) {
+  if (!nodeId || semanticChildren(hierarchy, nodeId).length === 0) return [...path];
+  if (path.at(-1) === nodeId) return [...path];
+  return [...path, nodeId];
+}
+
+function leaveFocusPath(path) {
+  return path.length ? path.slice(0, -1) : [];
 }
 
 function shortestPath(graph, fromId, toId) {
@@ -1077,6 +1114,7 @@ function init() {
   const mapStatus = document.getElementById('map-status');
   const renderer = createRenderer(canvas);
   const { nodesById, adjacency } = buildIndexes(graph);
+  const semanticHierarchy = buildSemanticHierarchy(graph);
   const curriculumById = new Map(graph.curriculumUnits.map(unit => [unit.id, unit]));
 
   const state = {
@@ -1088,6 +1126,8 @@ function init() {
     selectedId: null,
     selectedNeighborIds: new Set(),
     activeFilter: 'all',
+    focusPath: [],
+    focusRootId: null,
     visibleNodes: [],
   };
 
@@ -1159,7 +1199,7 @@ function init() {
   }
 
   function refreshVisible({ announce = false } = {}) {
-    state.visibleNodes = getVisibleNodes(graph, state.zoom, filtersForState());
+    state.visibleNodes = getScopedVisibleNodes(graph, semanticHierarchy, state.zoom, filtersForState(), state.focusRootId);
     dirty = true;
     if (announce) announceStatus();
   }
@@ -1206,6 +1246,44 @@ function init() {
     state.panY = targetY - node.y * state.zoom;
     refreshVisible();
     setSelected(node.id);
+  }
+
+  function enterFocus(id) {
+    const nextPath = enterFocusPath(state.focusPath, id, semanticHierarchy);
+    if (nextPath.length === state.focusPath.length) return false;
+    const root = nodesById.get(id);
+    if (!root) return false;
+    state.focusPath = nextPath;
+    state.focusRootId = nextPath.at(-1) ?? null;
+    state.zoom = 0.8;
+    const targetX = window.innerWidth * (window.innerWidth > 980 ? 0.42 : 0.5);
+    const targetY = window.innerHeight * (window.innerWidth > 980 ? 0.50 : 0.42);
+    state.panX = targetX - root.x * state.zoom;
+    state.panY = targetY - root.y * state.zoom;
+    refreshVisible();
+    clearSelection();
+    return true;
+  }
+
+  function leaveFocus() {
+    if (!state.focusPath.length) return false;
+    const nextPath = leaveFocusPath(state.focusPath);
+    state.focusPath = nextPath;
+    state.focusRootId = nextPath.at(-1) ?? null;
+    state.zoom = 0.8;
+    const root = state.focusRootId ? nodesById.get(state.focusRootId) : null;
+    if (root) {
+      const targetX = window.innerWidth * (window.innerWidth > 980 ? 0.42 : 0.5);
+      const targetY = window.innerHeight * (window.innerWidth > 980 ? 0.50 : 0.42);
+      state.panX = targetX - root.x * state.zoom;
+      state.panY = targetY - root.y * state.zoom;
+    } else {
+      state.panX = window.innerWidth / 2;
+      state.panY = window.innerHeight / 2;
+    }
+    refreshVisible();
+    clearSelection();
+    return true;
   }
 
   function findByQuery(rawQuery) {
@@ -1273,6 +1351,8 @@ function init() {
     state.panX = window.innerWidth / 2;
     state.panY = window.innerHeight / 2;
     state.activeFilter = 'all';
+    state.focusPath = [];
+    state.focusRootId = null;
     search.value = '';
     resetFilterButtons('all');
     refreshVisible();

@@ -78,3 +78,57 @@ test('29 hierarchy descendants are transitively indexed', () => {
   };
   assert.deepEqual([...buildSemanticHierarchy(fixture).descendantsById.get('a')].sort(), ['b','c']);
 });
+
+
+test('30 scoped visibility uses relative hierarchy depth', () => {
+  const { buildSemanticHierarchy, getScopedVisibleNodes } = loadRuntime();
+  const fixture = {
+    nodes: [
+      {id:'r',level:3,community:'x',curriculumRefs:[],tags:[]},
+      {id:'c',level:4,community:'x',curriculumRefs:[],tags:[]},
+      {id:'g',level:5,community:'x',curriculumRefs:[],tags:[]},
+    ],
+    edges: [
+      {source:'r',target:'c',type:'PART_OF',strength:1},
+      {source:'c',target:'g',type:'PART_OF',strength:1},
+    ],
+  };
+  const hierarchy = buildSemanticHierarchy(fixture);
+  assert.deepEqual(getScopedVisibleNodes(fixture,hierarchy,.8,{},'r').map(n=>n.id), ['r','c']);
+});
+
+test('31 entering a leaf is rejected', () => {
+  const { buildSemanticHierarchy, enterFocusPath } = loadRuntime();
+  const fixture={nodes:[{id:'a',level:0}],edges:[]};
+  assert.deepEqual([...enterFocusPath([], 'a', buildSemanticHierarchy(fixture))], []);
+});
+
+test('32 enter and leave focus path is stable', () => {
+  const { buildSemanticHierarchy, enterFocusPath, leaveFocusPath } = loadRuntime();
+  const fixture={
+    nodes:[{id:'a',level:0},{id:'b',level:1}],
+    edges:[{source:'a',target:'b',type:'PART_OF',strength:1}],
+  };
+  const hierarchy=buildSemanticHierarchy(fixture);
+  assert.deepEqual([...leaveFocusPath(enterFocusPath([], 'a', hierarchy))], []);
+});
+
+test('33 focus helpers never mutate canonical coordinates', () => {
+  const { graph, buildSemanticHierarchy, enterFocusPath, leaveFocusPath, getScopedVisibleNodes } = loadRuntime();
+  const before = graph.nodes.map(({id,x,y}) => [id,x,y]);
+  const hierarchy = buildSemanticHierarchy(graph);
+  const enterable = graph.nodes.find(node => (hierarchy.childrenById.get(node.id) ?? []).length);
+  const path = enterFocusPath([], enterable.id, hierarchy);
+  getScopedVisibleNodes(graph, hierarchy, 3.3, {}, path.at(-1));
+  leaveFocusPath(path);
+  assert.deepEqual(graph.nodes.map(({id,x,y}) => [id,x,y]), before);
+});
+
+test('34 app state wires semantic hierarchy and recursive focus scope', () => {
+  const source = readSource();
+  assert.match(source, /const semanticHierarchy\s*=\s*buildSemanticHierarchy\(graph\)/);
+  assert.match(source, /focusPath:\s*\[\]/);
+  assert.match(source, /getScopedVisibleNodes\(graph,\s*semanticHierarchy,\s*state\.zoom,\s*filtersForState\(\),\s*state\.focusRootId\)/);
+  assert.match(source, /function enterFocus\(id\)/);
+  assert.match(source, /function leaveFocus\(\)/);
+});
