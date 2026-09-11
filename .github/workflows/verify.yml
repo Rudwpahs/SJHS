@@ -1,0 +1,23 @@
+name: Verify SJHS source
+
+on:
+  push:
+    branches:
+      - work/restore-source-structure
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Verify source, graph, audit and package round-trip
+        run: npm run verify

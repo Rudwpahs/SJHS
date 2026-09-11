@@ -25,6 +25,29 @@ https://rudwpahs.github.io/SJHS/
 - quantum/relativity landmarks
 - personal research landmarks
 
+## Restored source workflow
+
+`src/SJHS_Memory_Palace_UIUX.html` is the recovered 159,032-byte canonical UI source. Its required SHA-256 is:
+
+`3b1a36475caebac8eebc0923c176bdb5ff0a46eb77e1704c45ec47971d053232`
+
+If the source is ever missing from a checkout, the four published payload chunks reconstruct it exactly:
+
+```bash
+npm run recover-source
+```
+
+Verification commands:
+
+```bash
+npm test          # 26 characterization tests
+npm run audit     # source, graph, accessibility and dependency gates
+npm run build     # four-chunk Pages package -> dist/
+npm run verify    # all gates + byte-for-byte payload restoration
+```
+
+The recovery does not move canonical node coordinates, change graph knowledge, or replace the currently published root payloads. Future behavior changes start from the recovered source and follow `SKILL.md` TDD rules.
+
 ## UI/UX
 
 The current UI follows the project [`SKILL.md`](./SKILL.md) and the checked UI/UX Pro Max / design-system / ui-styling guidance:
