@@ -24,18 +24,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Verify and build current canonical source
+        run: npm run verify
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
-
-      - name: Prepare static site
-        run: |
-          mkdir -p _site
-          cp index.html sjhs-payload-*.js .nojekyll _site/
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: _site
+          path: dist
 
       - name: Deploy Pages
         id: deployment
