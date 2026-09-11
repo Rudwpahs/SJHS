@@ -1,0 +1,34 @@
+name: Apply recursive zoom task 2
+
+on:
+  push:
+    branches:
+      - feat/recursive-semantic-zoom
+
+permissions:
+  contents: write
+
+jobs:
+  apply-task2:
+    if: "!contains(github.event.head_commit.message, 'feat: add recursive focus scopes')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/recursive-semantic-zoom
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Apply task 2 transform
+        run: node scripts/apply-recursive-semantic-zoom-task2.mjs
+      - name: Verify task 2
+        run: node --test tests/source.test.mjs
+      - name: Commit task 2 and remove one-shot tooling
+        run: |
+          rm scripts/apply-recursive-semantic-zoom-task2.mjs
+          rm .github/workflows/apply-recursive-semantic-zoom-task2.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/SJHS_Memory_Palace_UIUX.html tests/helpers.mjs tests/source.test.mjs scripts/apply-recursive-semantic-zoom-task2.mjs .github/workflows/apply-recursive-semantic-zoom-task2.yml
+          git commit -m "feat: add recursive focus scopes"
+          git push origin HEAD:feat/recursive-semantic-zoom
