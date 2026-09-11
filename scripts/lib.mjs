@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 export const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const sourcePath = path.join(root, 'src', 'SJHS_Memory_Palace_UIUX.html');
-export const sourceSha256 = '3b1a36475caebac8eebc0923c176bdb5ff0a46eb77e1704c45ec47971d053232';
+export const sourceSha256 = '47bc095f766b788a56eb1de4a92061c2467fab108dc62395530ed68c10fbaa06';
 export const readSourceBuffer = () => fs.readFileSync(sourcePath);
 export const sha256 = data => crypto.createHash('sha256').update(data).digest('hex');
 export const gitBlobSha = data => crypto.createHash('sha1').update(`blob ${data.length}\0`).update(data).digest('hex');

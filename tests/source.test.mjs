@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
-import { readSource, loadRuntime, expectedSourceSha } from './helpers.mjs';
+import vm from 'node:vm';
+import { readSource, loadRuntime, expectedSourceSha, extractScript } from './helpers.mjs';
 
 const sha256 = text => crypto.createHash('sha256').update(text).digest('hex');
 
@@ -33,3 +34,154 @@ test('23 nextZoom clamps lower bound', () => assert.equal(loadRuntime().nextZoom
 test('24 nextZoom clamps upper bound', () => assert.equal(loadRuntime().nextZoom(6,10),6));
 test('25 explicit theme preference wins', () => { const {resolveThemePreference}=loadRuntime(); assert.equal(resolveThemePreference('light',true),'light'); assert.equal(resolveThemePreference('dark',false),'dark'); });
 test('26 world/screen transforms round-trip', () => { const {worldToScreenPoint,screenToWorldPoint}=loadRuntime(); const state={zoom:2.25,panX:413,panY:287}; const p={x:-91.2,y:44.5}; const q=screenToWorldPoint(worldToScreenPoint(p,state),state); assert.ok(Math.abs(q.x-p.x)<1e-9); assert.ok(Math.abs(q.y-p.y)<1e-9); });
+
+
+test('27 hierarchy prefers PART_OF over fallback relations', () => {
+  const { buildSemanticHierarchy } = loadRuntime();
+  const fixture = {
+    nodes: [
+      { id:'root', level:0 },
+      { id:'other', level:1 },
+      { id:'child', level:2 },
+    ],
+    edges: [
+      { source:'other', target:'child', type:'CAUSES', strength:5 },
+      { source:'root', target:'child', type:'PART_OF', strength:1 },
+    ],
+  };
+  assert.equal(buildSemanticHierarchy(fixture).parentById.get('child'), 'root');
+});
+
+test('28 fallback hierarchy is deterministic and only climbs level', () => {
+  const { buildSemanticHierarchy } = loadRuntime();
+  const fixture = {
+    nodes: [
+      { id:'a', level:1 },
+      { id:'b', level:1 },
+      { id:'c', level:2 },
+    ],
+    edges: [
+      { source:'b', target:'c', type:'CAUSES', strength:4 },
+      { source:'a', target:'c', type:'CAUSES', strength:4 },
+    ],
+  };
+  assert.equal(buildSemanticHierarchy(fixture).parentById.get('c'), 'a');
+});
+
+test('29 hierarchy descendants are transitively indexed', () => {
+  const { buildSemanticHierarchy } = loadRuntime();
+  const fixture = {
+    nodes: [{id:'a',level:0},{id:'b',level:1},{id:'c',level:2}],
+    edges: [
+      {source:'a',target:'b',type:'PART_OF',strength:1},
+      {source:'b',target:'c',type:'PART_OF',strength:1},
+    ],
+  };
+  assert.deepEqual([...buildSemanticHierarchy(fixture).descendantsById.get('a')].sort(), ['b','c']);
+});
+
+
+test('30 scoped visibility uses relative hierarchy depth', () => {
+  const { buildSemanticHierarchy, getScopedVisibleNodes } = loadRuntime();
+  const fixture = {
+    nodes: [
+      {id:'r',level:3,community:'x',curriculumRefs:[],tags:[]},
+      {id:'c',level:4,community:'x',curriculumRefs:[],tags:[]},
+      {id:'g',level:5,community:'x',curriculumRefs:[],tags:[]},
+    ],
+    edges: [
+      {source:'r',target:'c',type:'PART_OF',strength:1},
+      {source:'c',target:'g',type:'PART_OF',strength:1},
+    ],
+  };
+  const hierarchy = buildSemanticHierarchy(fixture);
+  assert.deepEqual(getScopedVisibleNodes(fixture,hierarchy,.8,{},'r').map(n=>n.id), ['r','c']);
+});
+
+test('31 entering a leaf is rejected', () => {
+  const { buildSemanticHierarchy, enterFocusPath } = loadRuntime();
+  const fixture={nodes:[{id:'a',level:0}],edges:[]};
+  assert.deepEqual([...enterFocusPath([], 'a', buildSemanticHierarchy(fixture))], []);
+});
+
+test('32 enter and leave focus path is stable', () => {
+  const { buildSemanticHierarchy, enterFocusPath, leaveFocusPath } = loadRuntime();
+  const fixture={
+    nodes:[{id:'a',level:0},{id:'b',level:1}],
+    edges:[{source:'a',target:'b',type:'PART_OF',strength:1}],
+  };
+  const hierarchy=buildSemanticHierarchy(fixture);
+  assert.deepEqual([...leaveFocusPath(enterFocusPath([], 'a', hierarchy))], []);
+});
+
+test('33 focus helpers never mutate canonical coordinates', () => {
+  const { graph, buildSemanticHierarchy, enterFocusPath, leaveFocusPath, getScopedVisibleNodes } = loadRuntime();
+  const before = graph.nodes.map(({id,x,y}) => [id,x,y]);
+  const hierarchy = buildSemanticHierarchy(graph);
+  const enterable = graph.nodes.find(node => (hierarchy.childrenById.get(node.id) ?? []).length);
+  const path = enterFocusPath([], enterable.id, hierarchy);
+  getScopedVisibleNodes(graph, hierarchy, 3.3, {}, path.at(-1));
+  leaveFocusPath(path);
+  assert.deepEqual(graph.nodes.map(({id,x,y}) => [id,x,y]), before);
+});
+
+test('34 app state wires semantic hierarchy and recursive focus scope', () => {
+  const source = readSource();
+  assert.match(source, /const semanticHierarchy\s*=\s*buildSemanticHierarchy\(graph\)/);
+  assert.match(source, /focusPath:\s*\[\]/);
+  assert.match(source, /getScopedVisibleNodes\(graph,\s*semanticHierarchy,\s*state\.zoom,\s*filtersForState\(\),\s*state\.focusRootId\)/);
+  assert.match(source, /function enterFocus\(id\)/);
+  assert.match(source, /function leaveFocus\(\)/);
+});
+
+
+test('35 inspector exposes accessible enter and back focus controls', () => {
+  const source = readSource();
+  assert.match(source, /data-action="enter-focus"/);
+  assert.match(source, /data-action="leave-focus"/);
+  assert.match(source, /\.focus-action[\s\S]*min-height:\s*var\(--control-hit-size\)/);
+});
+
+test('36 keyboard supports Shift+Enter drill-in and Escape scope exit', () => {
+  const source = readSource();
+  assert.match(source, /event\.shiftKey\s*&&\s*event\.key\s*===\s*['"]Enter['"]/);
+  assert.match(source, /if \(state\.selectedId\) clearSelection\(\);[\s\S]*else if \(state\.focusPath\.length\) leaveFocus\(\);/);
+});
+
+test('37 search and cross-links can escape a recursive scope', () => {
+  const source = readSource();
+  assert.match(source, /function ensureGlobalIfOutsideScope\(nodeId\)/);
+  assert.match(source, /ensureGlobalIfOutsideScope\(node\.id\);[\s\S]*focusNode\(node\)/);
+  assert.match(source, /ensureGlobalIfOutsideScope\(nodeButton\.dataset\.node\)/);
+});
+
+test('38 STREET zoom ceiling can recurse into selected semantic child world', () => {
+  const source = readSource();
+  assert.match(source, /zoomBand\(state\.zoom\)\s*===\s*['"]STREET['"]/);
+  assert.match(source, /enterFocus\(state\.selectedId\)/);
+});
+
+
+test('41 semantic navigation level is relative inside a focus scope', () => {
+  const script = extractScript();
+  const context = { console };
+  vm.createContext(context);
+  vm.runInContext(`${script}\n;globalThis.__LEVEL__ = typeof semanticLevelForNode === 'function' ? semanticLevelForNode : null; globalThis.__H__ = buildSemanticHierarchy;`, context);
+  assert.equal(typeof context.__LEVEL__, 'function');
+  const fixture = {
+    nodes: [{id:'r',level:3},{id:'c',level:4},{id:'g',level:5}],
+    edges: [
+      {source:'r',target:'c',type:'PART_OF',strength:1},
+      {source:'c',target:'g',type:'PART_OF',strength:1},
+    ],
+  };
+  const hierarchy = context.__H__(fixture);
+  assert.equal(context.__LEVEL__(hierarchy, 'r', fixture.nodes[2]), 2);
+  assert.equal(context.__LEVEL__(hierarchy, null, fixture.nodes[2]), 5);
+});
+
+test('42 focusNode uses semantic navigation depth rather than absolute node level', () => {
+  const source = readSource();
+  assert.match(source, /const semanticLevel\s*=\s*semanticLevelForNode\(semanticHierarchy,\s*state\.focusRootId,\s*node\)/);
+  assert.match(source, /zoomThresholdForLevel\(semanticLevel\)/);
+});
