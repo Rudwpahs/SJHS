@@ -1,0 +1,1412 @@
+<!doctype html>
+<html lang="ko" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="hsl(225 34% 4%)" />
+  <meta name="description" content="세종과학고 출석면담 대비용 First Principles 과학 Memory Palace" />
+  <title>SJHS Science Memory Palace</title>
+  <style>
+/* ================================================================
+   SJHS Memory Palace design tokens
+   Primitive -> semantic -> component
+   ================================================================ */
+:root {
+  color-scheme: dark light;
+
+  /* Primitive color */
+  --primitive-neutral-0: hsl(0 0% 100%);
+  --primitive-neutral-50: hsl(210 24% 98%);
+  --primitive-neutral-100: hsl(214 20% 94%);
+  --primitive-neutral-200: hsl(215 18% 85%);
+  --primitive-neutral-400: hsl(216 12% 58%);
+  --primitive-neutral-600: hsl(218 15% 37%);
+  --primitive-neutral-750: hsl(220 18% 23%);
+  --primitive-neutral-850: hsl(222 24% 14%);
+  --primitive-neutral-925: hsl(224 30% 8%);
+  --primitive-neutral-975: hsl(225 34% 4%);
+  --primitive-blue-300: hsl(205 82% 73%);
+  --primitive-blue-500: hsl(207 82% 58%);
+  --primitive-cyan-400: hsl(184 64% 56%);
+  --primitive-violet-400: hsl(265 64% 68%);
+  --primitive-amber-400: hsl(41 92% 63%);
+  --primitive-rose-400: hsl(347 77% 70%);
+  --primitive-green-400: hsl(151 55% 55%);
+
+  /* Primitive spacing / type / motion */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-pill: 999px;
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Noto Sans KR", sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-md: 16px;
+  --text-lg: 20px;
+  --text-xl: 28px;
+  --control-hit-size: 44px;
+  --motion-fast: 120ms;
+  --motion-standard: 180ms;
+  --motion-spatial: 260ms;
+}
+
+/* Semantic: preferred dark identity */
+:root,
+[data-theme="dark"] {
+  --surface-map: hsl(225 34% 4%);
+  --surface-map-raised: hsl(224 29% 7%);
+  --surface-floating: hsl(222 24% 10% / 0.92);
+  --surface-floating-strong: hsl(222 24% 9% / 0.98);
+  --surface-control: hsl(220 18% 18% / 0.74);
+  --surface-control-hover: hsl(218 17% 24% / 0.90);
+  --surface-selected: hsl(207 82% 58% / 0.13);
+  --surface-muted: hsl(220 18% 17% / 0.62);
+  --surface-scrim: hsl(225 34% 2% / 0.52);
+
+  --text-primary: hsl(210 24% 96%);
+  --text-secondary: hsl(215 18% 77%);
+  --text-muted: hsl(216 13% 66%);
+  --text-inverse: hsl(225 34% 4%);
+
+  --border-subtle: hsl(214 23% 76% / 0.14);
+  --border-strong: hsl(214 25% 82% / 0.30);
+  --focus-ring: hsl(205 90% 70%);
+  --shadow-floating: 0 18px 52px hsl(225 45% 2% / 0.30);
+
+  --map-edge: hsl(216 30% 72% / 0.11);
+  --map-edge-related: hsl(211 48% 81% / 0.42);
+  --map-edge-dim: hsl(217 18% 60% / 0.042);
+  --map-label-bg: hsl(224 30% 7% / 0.86);
+  --map-label: hsl(210 24% 96% / 0.94);
+  --map-label-dim: hsl(214 20% 82% / 0.77);
+  --map-selection-ring: hsl(0 0% 100%);
+  --map-landmark-core: hsl(210 24% 98%);
+  --map-terrain: hsl(211 45% 62% / 0.045);
+
+  --map-community-foundation: hsl(210 24% 96%);
+  --map-community-physics: hsl(205 82% 73%);
+  --map-community-chemistry: hsl(184 64% 60%);
+  --map-community-biology: hsl(151 55% 62%);
+  --map-community-earth: hsl(41 84% 66%);
+  --map-community-modern: hsl(347 77% 72%);
+  --map-community-personal: hsl(265 64% 72%);
+  --map-community-math: hsl(28 76% 66%);
+}
+
+/* Semantic: complete light alternative */
+[data-theme="light"] {
+  --surface-map: hsl(210 24% 98%);
+  --surface-map-raised: hsl(210 22% 96%);
+  --surface-floating: hsl(0 0% 100% / 0.94);
+  --surface-floating-strong: hsl(0 0% 100% / 0.99);
+  --surface-control: hsl(216 22% 92% / 0.92);
+  --surface-control-hover: hsl(215 22% 87% / 0.98);
+  --surface-selected: hsl(207 82% 50% / 0.10);
+  --surface-muted: hsl(214 20% 92% / 0.86);
+  --surface-scrim: hsl(220 30% 12% / 0.18);
+
+  --text-primary: hsl(224 30% 12%);
+  --text-secondary: hsl(219 18% 30%);
+  --text-muted: hsl(218 13% 38%);
+  --text-inverse: hsl(0 0% 100%);
+
+  --border-subtle: hsl(219 20% 32% / 0.14);
+  --border-strong: hsl(219 24% 24% / 0.28);
+  --focus-ring: hsl(207 92% 38%);
+  --shadow-floating: 0 16px 42px hsl(220 24% 20% / 0.13);
+
+  --map-edge: hsl(219 26% 35% / 0.15);
+  --map-edge-related: hsl(210 56% 34% / 0.48);
+  --map-edge-dim: hsl(219 18% 40% / 0.055);
+  --map-label-bg: hsl(0 0% 100% / 0.90);
+  --map-label: hsl(224 30% 12% / 0.95);
+  --map-label-dim: hsl(219 20% 26% / 0.80);
+  --map-selection-ring: hsl(224 30% 12%);
+  --map-landmark-core: hsl(224 30% 12%);
+  --map-terrain: hsl(207 60% 46% / 0.05);
+
+  --map-community-foundation: hsl(224 20% 20%);
+  --map-community-physics: hsl(207 78% 41%);
+  --map-community-chemistry: hsl(181 66% 31%);
+  --map-community-biology: hsl(151 52% 31%);
+  --map-community-earth: hsl(35 75% 38%);
+  --map-community-modern: hsl(345 67% 45%);
+  --map-community-personal: hsl(264 56% 48%);
+  --map-community-math: hsl(24 67% 42%);
+}
+
+/* Component tokens */
+:root {
+  --dock-bg: var(--surface-floating);
+  --dock-border: var(--border-subtle);
+  --dock-shadow: var(--shadow-floating);
+  --control-bg: var(--surface-control);
+  --control-bg-hover: var(--surface-control-hover);
+  --control-fg: var(--text-secondary);
+  --control-fg-active: var(--text-primary);
+  --inspector-bg: var(--surface-floating-strong);
+  --inspector-border: var(--border-subtle);
+  --chip-bg: var(--surface-muted);
+}
+
+* { box-sizing: border-box; }
+html, body, #app { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+html { background: var(--surface-map); }
+body {
+  background: var(--surface-map);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  text-rendering: optimizeLegibility;
+}
+button, input { font: inherit; }
+button { color: inherit; }
+button, input, canvas { -webkit-tap-highlight-color: transparent; }
+button:disabled { cursor: not-allowed; opacity: 0.45; }
+
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+.app-shell { position: relative; isolation: isolate; background: var(--surface-map); }
+#map {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  background: var(--surface-map);
+  touch-action: none;
+}
+#map.dragging { cursor: grabbing; }
+#map:focus-visible { outline-offset: -4px; }
+
+.map-atmosphere {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(circle at 48% 46%, var(--map-terrain), transparent 38%),
+    linear-gradient(to bottom, transparent 72%, var(--surface-map) 118%);
+}
+
+.command-dock,
+.layer-tabs,
+.map-controls,
+.inspector,
+.map-key {
+  z-index: 4;
+  border: 1px solid var(--dock-border);
+  background: var(--dock-bg);
+  box-shadow: var(--dock-shadow);
+}
+
+.command-dock {
+  position: absolute;
+  top: max(var(--space-4), env(safe-area-inset-top));
+  left: max(var(--space-4), env(safe-area-inset-left));
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: min(720px, calc(100vw - 32px));
+  min-height: 56px;
+  padding: 6px;
+  border-radius: var(--radius-lg);
+}
+.brand-mark { display: flex; align-items: center; gap: 10px; padding: 0 8px 0 6px; min-width: 190px; }
+.brand-symbol {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  color: var(--map-community-foundation);
+}
+.brand-symbol svg,
+.icon-button svg,
+.search-icon svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.brand-copy { display: flex; flex-direction: column; min-width: 0; line-height: 1.05; }
+.brand-copy strong { font-size: 13px; letter-spacing: 0.12em; white-space: nowrap; }
+.brand-copy small { margin-top: 5px; color: var(--text-muted); font-size: 9px; letter-spacing: 0.12em; white-space: nowrap; }
+
+.search-shell {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 140px;
+  min-height: var(--control-hit-size);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--surface-control);
+  color: var(--text-muted);
+  transition: border-color var(--motion-fast) ease, background-color var(--motion-fast) ease;
+}
+.search-shell:focus-within { border-color: var(--focus-ring); background: var(--surface-control-hover); }
+.search-icon { display: grid; place-items: center; width: var(--control-hit-size); height: var(--control-hit-size); flex: 0 0 auto; }
+.search-shell input {
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+}
+.search-shell input::placeholder { color: var(--text-muted); }
+.dock-actions { display: flex; align-items: center; gap: var(--space-1); }
+
+.icon-button {
+  display: inline-grid;
+  place-items: center;
+  width: var(--control-hit-size);
+  height: var(--control-hit-size);
+  min-width: var(--control-hit-size);
+  min-height: var(--control-hit-size);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--control-bg);
+  color: var(--control-fg);
+  cursor: pointer;
+  transition: background-color var(--motion-fast) ease, color var(--motion-fast) ease, opacity var(--motion-fast) ease;
+}
+.icon-button:hover { background: var(--control-bg-hover); color: var(--control-fg-active); }
+.icon-button:active { background: var(--surface-selected); color: var(--text-primary); }
+
+.layer-tabs {
+  position: absolute;
+  top: calc(max(var(--space-4), env(safe-area-inset-top)) + 68px);
+  left: max(var(--space-4), env(safe-area-inset-left));
+  display: flex;
+  gap: 2px;
+  max-width: min(520px, calc(100vw - 32px));
+  padding: var(--space-1);
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-radius: var(--radius-md);
+}
+.layer-tabs::-webkit-scrollbar { display: none; }
+.layer-tabs button {
+  min-height: var(--control-hit-size);
+  padding: 0 var(--space-3);
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color var(--motion-fast) ease, color var(--motion-fast) ease;
+}
+.layer-tabs button:hover { color: var(--text-primary); background: var(--surface-control); }
+.layer-tabs button.active,
+.layer-tabs button[aria-pressed="true"] { color: var(--text-primary); background: var(--surface-selected); }
+
+.map-controls {
+  position: absolute;
+  left: max(var(--space-4), env(safe-area-inset-left));
+  bottom: max(var(--space-4), env(safe-area-inset-bottom));
+  display: grid;
+  grid-template-columns: var(--control-hit-size) var(--control-hit-size) auto;
+  gap: 2px;
+  align-items: center;
+  padding: var(--space-1);
+  border-radius: var(--radius-md);
+}
+.scale-readout { display: flex; align-items: baseline; gap: var(--space-2); min-width: 112px; padding: 0 var(--space-3); }
+.scale-readout span { color: var(--text-muted); font-size: 10px; letter-spacing: 0.12em; }
+.scale-readout strong { color: var(--text-primary); font-size: var(--text-xs); }
+
+.inspector {
+  position: absolute;
+  top: max(var(--space-4), env(safe-area-inset-top));
+  right: max(var(--space-4), env(safe-area-inset-right));
+  width: min(360px, calc(100vw - 32px));
+  max-height: calc(100svh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  padding: var(--space-5);
+  overflow: auto;
+  border-color: var(--inspector-border);
+  border-radius: var(--radius-xl);
+  background: var(--inspector-bg);
+  overscroll-behavior: contain;
+}
+.inspector-idle { max-width: 260px; }
+.inspector .eyebrow { margin-bottom: var(--space-2); color: var(--text-muted); font-size: 10px; letter-spacing: 0.14em; }
+.inspector h1 { margin: 0 0 var(--space-2); color: var(--text-primary); font-size: clamp(22px, 2.1vw, var(--text-xl)); line-height: 1.18; letter-spacing: -0.02em; }
+.inspector p { margin: 0; color: var(--text-secondary); font-size: var(--text-sm); line-height: 1.65; }
+.shortcut-row { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-3); margin-top: var(--space-4); color: var(--text-muted); font-size: 11px; }
+.shortcut-row span { display: inline-flex; align-items: center; gap: 4px; }
+kbd { padding: 2px 5px; border: 1px solid var(--border-subtle); border-radius: 5px; background: var(--surface-control); color: var(--text-secondary); font-family: var(--font-sans); font-size: 10px; }
+
+.inspector .meta { display: flex; flex-wrap: wrap; gap: 6px; margin: var(--space-4) 0; }
+.chip { padding: 5px 8px; border: 1px solid var(--border-subtle); border-radius: var(--radius-pill); background: var(--chip-bg); color: var(--text-secondary); font-size: 11px; }
+.inspector h2 { margin: var(--space-6) 0 var(--space-2); color: var(--text-muted); font-size: 10px; letter-spacing: 0.11em; text-transform: uppercase; }
+.mechanism { display: grid; gap: var(--space-2); }
+.step { padding: 10px 11px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--surface-muted); color: var(--text-secondary); font-size: var(--text-sm); line-height: 1.5; }
+.path { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.path span { padding: 5px 7px; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); background: var(--surface-selected); color: var(--text-primary); font-size: 11px; }
+.path b { color: var(--text-muted); font-weight: 400; }
+.equation { padding: 10px 11px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--surface-map-raised); color: var(--map-community-earth); font: 12px/1.55 var(--font-mono); overflow-wrap: anywhere; }
+.oral { padding: var(--space-3); border-inline-start: 2px solid var(--map-community-earth); background: var(--surface-muted); color: var(--text-secondary); font-size: var(--text-sm); line-height: 1.55; }
+.hint { margin-top: var(--space-4); color: var(--text-muted); font-size: 11px; }
+.related-nodes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2); }
+.related-node {
+  min-height: var(--control-hit-size);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--surface-control);
+  color: var(--text-secondary);
+  text-align: left;
+  cursor: pointer;
+}
+.related-node:hover { color: var(--text-primary); background: var(--surface-control-hover); }
+
+.map-key {
+  position: absolute;
+  left: 50%;
+  bottom: max(var(--space-4), env(safe-area-inset-bottom));
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+  transform: translateX(-50%);
+  padding: 9px var(--space-3);
+  border-radius: var(--radius-pill);
+  color: var(--text-muted);
+  font-size: 10px;
+  white-space: nowrap;
+}
+.map-key > span { display: inline-flex; gap: 7px; align-items: center; }
+.glyph-key { display: inline-block; width: 9px; height: 9px; border: 1.5px solid currentColor; color: var(--text-secondary); }
+.glyph-foundation { border-radius: 50%; box-shadow: inset 0 0 0 2px var(--surface-floating); outline: 1px solid currentColor; outline-offset: 2px; }
+.glyph-standard { border-radius: 50%; }
+.glyph-personal { transform: rotate(45deg); border-radius: 1px; color: var(--map-community-personal); }
+.glyph-modern { border-radius: 3px; color: var(--map-community-modern); }
+
+@media (max-width: 980px) {
+  .command-dock { width: min(620px, calc(100vw - 32px)); }
+  .brand-mark { min-width: 48px; padding-inline: 3px; }
+  .brand-copy { display: none; }
+  .inspector { top: auto; bottom: max(var(--space-4), env(safe-area-inset-bottom)); max-height: 46svh; }
+  .map-key { display: none; }
+  .map-controls { bottom: calc(max(var(--space-4), env(safe-area-inset-bottom)) + 48svh); }
+}
+
+@media (max-width: 640px) {
+  .command-dock {
+    right: max(var(--space-3), env(safe-area-inset-right));
+    left: max(var(--space-3), env(safe-area-inset-left));
+    width: auto;
+  }
+  .brand-mark { display: none; }
+  .layer-tabs {
+    top: calc(max(var(--space-4), env(safe-area-inset-top)) + 66px);
+    left: max(var(--space-3), env(safe-area-inset-left));
+    max-width: calc(100vw - 24px);
+  }
+  .inspector {
+    right: max(var(--space-3), env(safe-area-inset-right));
+    left: max(var(--space-3), env(safe-area-inset-left));
+    width: auto;
+    padding: var(--space-4);
+    border-radius: var(--radius-lg);
+  }
+  .map-controls { left: max(var(--space-3), env(safe-area-inset-left)); }
+  .scale-readout { min-width: 96px; padding-inline: var(--space-2); }
+}
+
+@media (max-height: 560px) and (orientation: landscape) {
+  .inspector { top: var(--space-3); bottom: var(--space-3); max-height: none; width: 320px; }
+  .map-controls { bottom: max(var(--space-3), env(safe-area-inset-bottom)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.inspector-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+.inspector-head h1 { margin-bottom: 0; }
+.inspector-close { flex: 0 0 var(--control-hit-size); }
+
+</style>
+</head>
+<body>
+  <main id="app" class="app-shell">
+    <canvas
+      id="map"
+      tabindex="0"
+      aria-label="세종과학고 과학 개념 Memory Palace 지도"
+      aria-describedby="map-help map-status"
+    ></canvas>
+
+    <div class="map-atmosphere" aria-hidden="true"></div>
+
+    <header class="command-dock" aria-label="지도 명령">
+      <div class="brand-mark" aria-label="SJHS Science Memory Palace">
+        <span class="brand-symbol" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="3.2"></circle>
+            <circle cx="12" cy="12" r="8.2"></circle>
+            <path d="M4.8 7.8 2.9 5.9M19.2 16.2l1.9 1.9"></path>
+          </svg>
+        </span>
+        <span class="brand-copy">
+          <strong>SJHS PALACE</strong>
+          <small>FIRST PRINCIPLES MAP</small>
+        </span>
+      </div>
+
+      <div class="search-shell">
+        <label class="sr-only" for="search">과학 개념 검색</label>
+        <span class="search-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <circle cx="11" cy="11" r="6.5"></circle>
+            <path d="m16 16 4.2 4.2"></path>
+          </svg>
+        </span>
+        <input
+          id="search"
+          type="search"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="개념 찾기  /"
+        />
+      </div>
+
+      <div class="dock-actions">
+        <button id="theme-toggle" class="icon-button" type="button" aria-label="테마 전환" title="테마 전환">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
+            <path d="M20.4 15.1A8.4 8.4 0 0 1 8.9 3.6 8.6 8.6 0 1 0 20.4 15.1Z"></path>
+          </svg>
+        </button>
+        <button id="reset" class="icon-button" type="button" aria-label="전체 지도 보기" title="전체 지도 보기">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="7.5"></circle>
+            <path d="M12 8v4l2.8 1.8M4.5 5.5v4h4"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <nav id="filters" class="layer-tabs" aria-label="지식 레이어">
+      <button type="button" data-filter="all" class="active" aria-pressed="true">전체</button>
+      <button type="button" data-filter="curriculum" aria-pressed="false">중등 필수</button>
+      <button type="button" data-filter="personal" aria-pressed="false">내 탐구</button>
+      <button type="button" data-filter="modern" aria-pressed="false">현대물리</button>
+    </nav>
+
+    <section class="map-controls" aria-label="지도 확대 축소">
+      <button id="zoom-in" class="icon-button" type="button" aria-label="지도 확대" title="지도 확대">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
+          <path d="M12 6v12M6 12h12"></path>
+        </svg>
+      </button>
+      <button id="zoom-out" class="icon-button" type="button" aria-label="지도 축소" title="지도 축소">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
+          <path d="M6 12h12"></path>
+        </svg>
+      </button>
+      <div class="scale-readout" aria-label="현재 확대 단계">
+        <span id="zoom-label">WORLD</span>
+        <strong id="zoom-value">0.80×</strong>
+      </div>
+    </section>
+
+    <aside id="details" class="inspector" tabindex="-1" aria-live="polite" aria-label="선택한 개념 상세 정보">
+      <div class="inspector-idle">
+        <div class="eyebrow">MEMORY PALACE</div>
+        <h1>지식 세계지도</h1>
+        <p>확대할수록 원리의 아래층이 열린다.</p>
+        <div class="shortcut-row" aria-label="지도 조작 도움말">
+          <span><kbd>+</kbd><kbd>−</kbd> 확대</span>
+          <span><kbd>방향키</kbd> 이동</span>
+          <span><kbd>/</kbd> 검색</span>
+        </div>
+      </div>
+    </aside>
+
+    <div class="map-key" aria-label="노드 모양 범례">
+      <span><i class="glyph-key glyph-foundation" aria-hidden="true"></i>원초 원리</span>
+      <span><i class="glyph-key glyph-standard" aria-hidden="true"></i>교과 개념</span>
+      <span><i class="glyph-key glyph-personal" aria-hidden="true"></i>내 탐구</span>
+      <span><i class="glyph-key glyph-modern" aria-hidden="true"></i>심화</span>
+    </div>
+
+    <p id="map-help" class="sr-only">휠 또는 플러스 마이너스 키로 확대하고, 드래그 또는 방향키로 지도를 탐색할 수 있습니다. 검색 슬래시는 검색창으로 이동합니다.</p>
+    <p id="map-status" class="sr-only" role="status" aria-live="polite">세계 지도. 확대 0.80배.</p>
+  </main>
+
+  <script>
+const graph = {"curriculumUnits":[{"id":"g1-earth-crust","name":"지권의 변화","domain":"earth","index":0},{"id":"g1-forces","name":"여러 가지 힘","domain":"physics","index":1},{"id":"g1-biodiversity","name":"생물의 다양성","domain":"life","index":2},{"id":"g1-gases","name":"기체의 성질","domain":"chemistry","index":3},{"id":"g1-state-change","name":"상태 변화","domain":"chemistry","index":4},{"id":"g1-light-waves","name":"빛과 파동","domain":"physics","index":5},{"id":"g1-science-future","name":"과학과 미래","domain":"integration","index":6},{"id":"g2-matter-composition","name":"물질의 구성","domain":"chemistry","index":7},{"id":"g2-electric-magnetic","name":"전기와 자기","domain":"physics","index":8},{"id":"g2-solar-system","name":"태양계","domain":"earth","index":9},{"id":"g2-plant-energy","name":"식물과 에너지","domain":"life","index":10},{"id":"g2-animal-energy","name":"동물과 에너지","domain":"life","index":11},{"id":"g2-matter-properties","name":"물질의 특성","domain":"chemistry","index":12},{"id":"g2-hydrosphere","name":"수권과 해수의 순환","domain":"earth","index":13},{"id":"g2-heat-life","name":"열과 우리 생활","domain":"physics","index":14},{"id":"g2-disaster-safety","name":"재해·재난과 안전","domain":"integration","index":15},{"id":"g3-chemical-reaction-energy","name":"화학 반응의 규칙과 에너지 변화","domain":"chemistry","index":16},{"id":"g3-atmosphere-weather","name":"기권과 날씨","domain":"earth","index":17},{"id":"g3-motion-energy","name":"운동과 에너지","domain":"physics","index":18},{"id":"g3-stimulus-response","name":"자극과 반응","domain":"life","index":19},{"id":"g3-reproduction-genetics","name":"생식과 유전","domain":"life","index":20},{"id":"g3-energy-conversion","name":"에너지 전환과 보존","domain":"integration","index":21},{"id":"g3-stars-universe","name":"별과 우주","domain":"earth","index":22},{"id":"g3-science-civilization","name":"과학기술과 인류 문명","domain":"integration","index":23}],"nodes":[{"id":"matter","name":"물질","summary":"입자·장·구조를 통해 관측 가능한 물리적 계를 이루는 내용물.","x":-130,"y":40,"level":0,"community":"foundations","curriculumRefs":[],"tags":["foundation"],"kind":"landmark","importance":5,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"energy","name":"에너지","summary":"변화를 가능하게 하고 여러 형태로 전환되지만 고립계에서 보존되는 양.","x":120,"y":65,"level":0,"community":"foundations","curriculumRefs":["g3-energy-conversion"],"tags":["foundation"],"kind":"landmark","importance":5,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"interaction","name":"상호작용","summary":"한 계의 상태가 다른 계의 상태 변화에 영향을 주는 관계.","x":-45,"y":-120,"level":0,"community":"foundations","curriculumRefs":["g1-forces"],"tags":["foundation"],"kind":"landmark","importance":5,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"information","name":"정보","summary":"가능한 상태를 구별하고 저장·전달·복제하게 하는 구조화된 차이.","x":220,"y":-90,"level":0,"community":"foundations","curriculumRefs":[],"tags":["foundation"],"kind":"landmark","importance":5,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"equilibrium","name":"평형","summary":"반대되는 변화 경향이 균형을 이루어 거시적 상태가 일정한 상태.","x":-250,"y":-95,"level":0,"community":"foundations","curriculumRefs":[],"tags":["foundation"],"kind":"landmark","importance":5,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"space-time","name":"공간·시간","summary":"사건의 위치와 순서를 기술하는 물리의 기본 좌표 틀.","x":35,"y":225,"level":0,"community":"foundations","curriculumRefs":[],"tags":["foundation"],"kind":"landmark","importance":5,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"gradient","name":"기울기","summary":"공간에 따른 어떤 양의 차이가 이동과 흐름의 방향성을 만든다.","x":-45,"y":120,"level":1,"community":"foundations","curriculumRefs":[],"tags":["foundation"],"kind":"landmark","importance":4,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"conservation","name":"보존","summary":"상호작용 중에도 전체 계에서 일정하게 유지되는 물리량의 제약.","x":85,"y":-25,"level":1,"community":"foundations","curriculumRefs":["g3-energy-conversion"],"tags":["foundation"],"kind":"landmark","importance":4,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"feedback","name":"피드백","summary":"결과가 다시 조절 과정에 입력되어 상태를 안정화하거나 증폭하는 구조.","x":290,"y":20,"level":1,"community":"foundations","curriculumRefs":[],"tags":["foundation"],"kind":"landmark","importance":4,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"probability","name":"확률","summary":"여러 가능한 결과의 상대적 가능성을 정량화하는 언어.","x":-10,"y":300,"level":1,"community":"foundations","curriculumRefs":[],"tags":["foundation"],"kind":"landmark","importance":4,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"physics-world","name":"운동·장·파동","summary":"힘·운동·열·전자기·빛이 상호작용과 에너지로 연결된다.","x":-620,"y":40,"level":1,"community":"physics","curriculumRefs":[],"tags":["physics"],"kind":"region","importance":4,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"chemistry-world","name":"입자·결합·반응","summary":"원자와 전자의 구조가 물질의 성질과 반응을 만든다.","x":0,"y":590,"level":1,"community":"chemistry","curriculumRefs":[],"tags":["chemistry"],"kind":"region","importance":4,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"life-world","name":"세포·정보·항상성","summary":"막·에너지·정보·피드백이 생명 현상을 조직한다.","x":620,"y":60,"level":1,"community":"life","curriculumRefs":[],"tags":["life"],"kind":"region","importance":4,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"earth-world","name":"지구 시스템·우주","summary":"중력·열·유체·복사가 지구와 우주의 구조와 변화를 만든다.","x":0,"y":-590,"level":1,"community":"earth","curriculumRefs":[],"tags":["earth"],"kind":"region","importance":4,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"integration-world","name":"과학·기술·사회","summary":"측정·모델·설계가 과학과 기술을 사회 문제와 연결한다.","x":0,"y":0,"level":1,"community":"integration","curriculumRefs":[],"tags":["integration"],"kind":"region","importance":4,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"unit-g1-earth-crust","name":"지권의 변화","summary":"2015 개정 중학교 과학 필수 대단원.","x":-249.99,"y":-592.1,"level":2,"community":"earth","curriculumRefs":["g1-earth-crust"],"tags":["curriculum","earth"],"kind":"curriculum-unit","importance":3,"mechanism":[],"equation":"","oralPrompt":"지권의 변화의 핵심 원리를 원초적인 개념에서부터 설명해봐.","personalRefs":[]},{"id":"earth-layers","name":"지구 내부","summary":"지진파로 지구 내부의 층상 구조를 추론한다.","x":-342.06,"y":-541.62,"level":3,"community":"earth","curriculumRefs":["g1-earth-crust"],"tags":["curriculum","earth"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"지구 내부을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"minerals","name":"광물","summary":"고유한 성질을 가진 자연산 고체 물질.","x":-371.39,"y":-572.31,"level":3,"community":"earth","curriculumRefs":["g1-earth-crust"],"tags":["curriculum","earth"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"광물을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"rocks","name":"암석","summary":"광물의 집합이며 생성 과정에 따라 화성암·퇴적암·변성암으로 나뉜다.","x":-353.32,"y":-610.74,"level":3,"community":"earth","curriculumRefs":["g1-earth-crust"],"tags":["curriculum","earth"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"암석을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"plate-tectonics","name":"판 구조론","summary":"지각과 상부 맨틀의 판이 움직이며 지진·화산·산맥 형성을 설명한다.","x":-356.83,"y":-653.05,"level":3,"community":"earth","curriculumRefs":["g1-earth-crust"],"tags":["curriculum","earth"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"판 구조론을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"unit-g1-forces","name":"여러 가지 힘","summary":"2015 개정 중학교 과학 필수 대단원.","x":-846.02,"y":146.84,"level":2,"community":"physics","curriculumRefs":["g1-forces"],"tags":["curriculum","physics"],"kind":"curriculum-unit","importance":3,"mechanism":[],"equation":"","oralPrompt":"여러 가지 힘의 핵심 원리를 원초적인 개념에서부터 설명해봐.","personalRefs":[]},{"id":"gravity","name":"중력","summary":"질량을 가진 물체 사이의 인력. 지표 근처에서는 물체에 무게를 준다.","x":-906.96,"y":232.35,"level":3,"community":"physics","curriculumRefs":["g1-forces"],"tags":["curriculum","physics"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"중력을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"elastic-force","name":"탄성력","summary":"변형된 물체가 평형 형태로 돌아가려는 복원력.","x":-946.72,"y":217.47,"level":3,"community":"physics","curriculumRefs":["g1-forces"],"tags":["curriculum","physics"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"탄성력을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"friction","name":"마찰","summary":"접촉면의 상대 운동 또는 상대 운동하려는 경향을 방해하는 접촉 상호작용.","x":-947.17,"y":175.01,"level":3,"community":"physics","curriculumRefs":["g1-forces"],"tags":["curriculum","physics"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"마찰을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"buoyancy","name":"부력","summary":"유체의 깊이에 따른 압력 차가 물체 표면에 만들어 내는 위쪽 합력.","x":-968.73,"y":138.44,"level":3,"community":"physics","curriculumRefs":["g1-forces"],"tags":["curriculum","physics"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"부력을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"unit-g1-biodiversity","name":"생물의 다양성","summary":"2015 개정 중학교 과학 필수 대단원.","x":854.84,"y":-25.72,"level":2,"community":"life","curriculumRefs":["g1-biodiversity"],"tags":["curriculum","life"],"kind":"curriculum-unit","importance":3,"mechanism":[],"equation":"","oralPrompt":"생물의 다양성의 핵심 원리를 원초적인 개념에서부터 설명해봐.","personalRefs":[]},{"id":"species","name":"종","summary":"서로 번식하여 생식 가능한 자손을 남기는 생물 집단을 구분하는 기본 단위.","x":935.82,"y":-92.56,"level":3,"community":"life","curriculumRefs":["g1-biodiversity"],"tags":["curriculum","life"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"종을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"classification","name":"생물 분류","summary":"공통 특징과 계통 관계를 기준으로 생물을 체계화한다.","x":970.39,"y":-67.9,"level":3,"community":"life","curriculumRefs":["g1-biodiversity"],"tags":["curriculum","life"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"생물 분류을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"biodiversity","name":"생물 다양성","summary":"유전적·종·생태계 수준에서 생명의 다양성을 나타낸다.","x":959.84,"y":-26.77,"level":3,"community":"life","curriculumRefs":["g1-biodiversity"],"tags":["curriculum","life"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"생물 다양성을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"unit-g1-gases","name":"기체의 성질","summary":"2015 개정 중학교 과학 필수 대단원.","x":247.19,"y":627.36,"level":2,"community":"chemistry","curriculumRefs":["g1-gases"],"tags":["curriculum","chemistry"],"kind":"curriculum-unit","importance":3,"mechanism":[],"equation":"","oralPrompt":"기체의 성질의 핵심 원리를 원초적인 개념에서부터 설명해봐.","personalRefs":[]},{"id":"gas-pressure","name":"기체 압력","summary":"기체 입자가 벽과 충돌하며 단위 면적에 주는 힘.","x":345.46,"y":590.37,"level":3,"community":"chemistry","curriculumRefs":["g1-gases"],"tags":["curriculum","chemistry"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"기체 압력을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"boyle-law","name":"보일 법칙","summary":"온도가 일정할 때 일정량 기체의 압력과 부피는 반비례한다.","x":370.17,"y":624.9,"level":3,"community":"chemistry","curriculumRefs":["g1-gases"],"tags":["curriculum","chemistry"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"보일 법칙을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"charles-law","name":"샤를 법칙","summary":"압력이 일정할 때 기체 부피는 절대온도에 비례한다.","x":346.86,"y":660.39,"level":3,"community":"chemistry","curriculumRefs":["g1-gases"],"tags":["curriculum","chemistry"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"샤를 법칙을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"particle-thermal-motion","name":"입자의 열운동","summary":"입자는 온도에 따라 끊임없이 무작위 운동한다.","x":344.36,"y":702.77,"level":3,"community":"chemistry","curriculumRefs":["g1-gases"],"tags":["curriculum","chemistry"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"입자의 열운동을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"unit-g1-state-change","name":"상태 변화","summary":"2015 개정 중학교 과학 필수 대단원.","x":161.21,"y":781.08,"level":2,"community":"chemistry","curriculumRefs":["g1-state-change"],"tags":["curriculum","chemistry"],"kind":"curriculum-unit","importance":3,"mechanism":[],"equation":"","oralPrompt":"상태 변화의 핵심 원리를 원초적인 개념에서부터 설명해봐.","personalRefs":[]},{"id":"phase-change","name":"상태 변화","summary":"물질의 종류는 그대로인 채 입자 배열과 운동 상태가 달라지는 변화.","x":259.48,"y":818.07,"level":3,"community":"chemistry","curriculumRefs":["g1-state-change"],"tags":["curriculum","chemistry"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"상태 변화을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"latent-heat","name":"잠열","summary":"상태 변화 동안 온도 변화보다 입자 사이 상호작용 변화에 드나드는 에너지.","x":255.28,"y":860.32,"level":3,"community":"chemistry","curriculumRefs":["g1-state-change"],"tags":["curriculum","chemistry"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"잠열을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"melting-boiling","name":"융해·기화","summary":"고체→액체, 액체→기체로의 상태 변화.","x":214.36,"y":871.63,"level":3,"community":"chemistry","curriculumRefs":["g1-state-change"],"tags":["curriculum","chemistry"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"융해·기화을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"condensation-freezing","name":"액화·응고","summary":"기체→액체, 액체→고체로의 상태 변화.","x":184.53,"y":901.85,"level":3,"community":"chemistry","curriculumRefs":["g1-state-change"],"tags":["curriculum","chemistry"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"액화·응고을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"unit-g1-light-waves","name":"빛과 파동","summary":"2015 개정 중학교 과학 필수 대단원.","x":-860.37,"y":-28.71,"level":2,"community":"physics","curriculumRefs":["g1-light-waves"],"tags":["curriculum","physics"],"kind":"curriculum-unit","importance":3,"mechanism":[],"equation":"","oralPrompt":"빛과 파동의 핵심 원리를 원초적인 개념에서부터 설명해봐.","personalRefs":[]},{"id":"reflection","name":"반사","summary":"파동이 경계에서 원래 매질로 되돌아가는 현상.","x":-957.02,"y":12.34,"level":3,"community":"physics","curriculumRefs":["g1-light-waves"],"tags":["curriculum","physics"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"반사을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"refraction","name":"굴절","summary":"파동의 속력이 달라지는 경계를 지날 때 진행 방향이 변하는 현상.","x":-983.14,"y":-21.14,"level":3,"community":"physics","curriculumRefs":["g1-light-waves"],"tags":["curriculum","physics"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"굴절을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"lenses","name":"렌즈","summary":"굴절을 이용해 빛을 모으거나 퍼뜨리는 광학 소자.","x":-961.33,"y":-57.56,"level":3,"community":"physics","curriculumRefs":["g1-light-waves"],"tags":["curriculum","physics"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"렌즈을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"wave","name":"파동","summary":"공간과 시간에 따라 진동 상태가 전달되는 현상.","x":-960.59,"y":-100.01,"level":3,"community":"physics","curriculumRefs":["g1-light-waves"],"tags":["curriculum","physics"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"파동을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"sound","name":"소리","summary":"매질의 압력 변화가 전달되는 기계적 파동.","x":-920.73,"y":-114.63,"level":3,"community":"physics","curriculumRefs":["g1-light-waves"],"tags":["curriculum","physics"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"소리을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"unit-g1-science-future","name":"과학과 미래","summary":"2015 개정 중학교 과학 필수 대단원.","x":-151.45,"y":-258.96,"level":2,"community":"integration","curriculumRefs":["g1-science-future"],"tags":["curriculum","integration"],"kind":"curriculum-unit","importance":3,"mechanism":[],"equation":"","oralPrompt":"과학과 미래의 핵심 원리를 원초적인 개념에서부터 설명해봐.","personalRefs":[]},{"id":"scientific-model","name":"과학적 모델","summary":"복잡한 현실에서 핵심 관계를 추려 설명과 예측에 사용하는 표현.","x":-231.65,"y":-326.73,"level":3,"community":"integration","curriculumRefs":["g1-science-future"],"tags":["curriculum","integration"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"과학적 모델을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"science-engineering","name":"과학과 공학","summary":"과학은 자연 원리를 이해하고 공학은 그 원리를 이용해 문제를 해결한다.","x":-213.55,"y":-365.14,"level":3,"community":"integration","curriculumRefs":["g1-science-future"],"tags":["curriculum","integration"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"과학과 공학을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"measurement","name":"측정","summary":"현상을 수량과 단위로 비교 가능하게 만드는 과정.","x":-171.2,"y":-362.09,"level":3,"community":"integration","curriculumRefs":["g1-science-future"],"tags":["curriculum","integration"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"측정을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"unit-g2-matter-composition","name":"물질의 구성","summary":"2015 개정 중학교 과학 필수 대단원.","x":-4.8,"y":839.95,"level":2,"community":"chemistry","curriculumRefs":["g2-matter-composition"],"tags":["curriculum","chemistry"],"kind":"curriculum-unit","importance":3,"mechanism":[],"equation":"","oralPrompt":"물질의 구성의 핵심 원리를 원초적인 개념에서부터 설명해봐.","personalRefs":[]},{"id":"atom","name":"원자","summary":"원소의 화학적 성질을 유지하는 기본 입자.","x":44.69,"y":932.56,"level":3,"community":"chemistry","curriculumRefs":["g2-matter-composition"],"tags":["curriculum","chemistry"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"원자을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"molecule","name":"분자","summary":"둘 이상의 원자가 결합하여 독립된 입자로 존재하는 단위.","x":13.68,"y":961.56,"level":3,"community":"chemistry","curriculumRefs":["g2-matter-composition"],"tags":["curriculum","chemistry"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"분자을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"ion","name":"이온","summary":"전자를 잃거나 얻어 순전하를 가진 원자 또는 원자단.","x":-24.55,"y":943.08,"level":3,"community":"chemistry","curriculumRefs":["g2-matter-composition"],"tags":["curriculum","chemistry"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"이온을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"element","name":"원소","summary":"양성자 수가 같은 원자들의 종류.","x":-66.9,"y":946.13,"level":3,"community":"chemistry","curriculumRefs":["g2-matter-composition"],"tags":["curriculum","chemistry"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"원소을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"unit-g2-electric-magnetic","name":"전기와 자기","summary":"2015 개정 중학교 과학 필수 대단원.","x":-755.41,"y":-170.15,"level":2,"community":"physics","curriculumRefs":["g2-electric-magnetic"],"tags":["curriculum","physics"],"kind":"curriculum-unit","importance":3,"mechanism":[],"equation":"","oralPrompt":"전기와 자기의 핵심 원리를 원초적인 개념에서부터 설명해봐.","personalRefs":[]},{"id":"electric-charge","name":"전하","summary":"전자기 상호작용의 원천이 되는 물리량.","x":-860.39,"y":-167.89,"level":3,"community":"physics","curriculumRefs":["g2-electric-magnetic"],"tags":["curriculum","physics"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"전하을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"electric-current","name":"전류","summary":"단위 시간에 단면을 통과하는 전하량.","x":-872.23,"y":-208.66,"level":3,"community":"physics","curriculumRefs":["g2-electric-magnetic"],"tags":["curriculum","physics"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"전류을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"voltage","name":"전압","summary":"두 지점 사이 단위 전하당 전기적 위치에너지 차이.","x":-838.46,"y":-234.4,"level":3,"community":"physics","curriculumRefs":["g2-electric-magnetic"],"tags":["curriculum","physics"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"전압을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"resistance","name":"저항","summary":"전류 흐름에 대한 회로 요소의 비례 관계.","x":-822.03,"y":-273.55,"level":3,"community":"physics","curriculumRefs":["g2-electric-magnetic"],"tags":["curriculum","physics"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"저항을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"series-parallel","name":"직렬·병렬 회로","summary":"직렬은 전류가 같고 병렬은 가지의 전압이 같다.","x":-779.59,"y":-272.33,"level":3,"community":"physics","curriculumRefs":["g2-electric-magnetic"],"tags":["curriculum","physics"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"직렬·병렬 회로을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"magnetic-field","name":"자기장","summary":"움직이는 전하와 자석이 만드는 자기적 상호작용의 공간적 기술.","x":-742.2,"y":-292.44,"level":3,"community":"physics","curriculumRefs":["g2-electric-magnetic"],"tags":["curriculum","physics"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"자기장을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"electromagnetic-induction","name":"전자기 유도","summary":"자기선속 변화가 유도 기전력과 전류를 만드는 현상.","x":-709.97,"y":-264.81,"level":3,"community":"physics","curriculumRefs":["g2-electric-magnetic"],"tags":["curriculum","physics"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"전자기 유도을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"unit-g2-solar-system","name":"태양계","summary":"2015 개정 중학교 과학 필수 대단원.","x":-186.56,"y":-756.42,"level":2,"community":"earth","curriculumRefs":["g2-solar-system"],"tags":["curriculum","earth"],"kind":"curriculum-unit","importance":3,"mechanism":[],"equation":"","oralPrompt":"태양계의 핵심 원리를 원초적인 개념에서부터 설명해봐.","personalRefs":[]},{"id":"earth-rotation","name":"지구 자전","summary":"지구가 자전축 주위를 회전하여 하루 주기의 천체 운동을 만든다.","x":-291.44,"y":-761.5,"level":3,"community":"earth","curriculumRefs":["g2-solar-system"],"tags":["curriculum","earth"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"지구 자전을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"earth-revolution","name":"지구 공전","summary":"지구가 태양 주위를 공전하며 자전축 기울기와 함께 계절 변화를 만든다.","x":-300.4,"y":-803,"level":3,"community":"earth","curriculumRefs":["g2-solar-system"],"tags":["curriculum","earth"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"지구 공전을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"moon-phases","name":"달의 위상","summary":"태양빛을 받는 달의 절반 중 지구에서 보이는 부분이 달라지는 현상.","x":-264.91,"y":-826.32,"level":3,"community":"earth","curriculumRefs":["g2-solar-system"],"tags":["curriculum","earth"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"달의 위상을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"eclipse","name":"일식·월식","summary":"태양·지구·달의 정렬로 빛이 가려지거나 그림자에 들어가는 현상.","x":-245.79,"y":-864.22,"level":3,"community":"earth","curriculumRefs":["g2-solar-system"],"tags":["curriculum","earth"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"일식·월식을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"solar-system","name":"태양계","summary":"태양과 그 중력에 묶인 행성·위성·소천체의 계.","x":-203.53,"y":-860.04,"level":3,"community":"earth","curriculumRefs":["g2-solar-system"],"tags":["curriculum","earth"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"태양계을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"unit-g2-plant-energy","name":"식물과 에너지","summary":"2015 개정 중학교 과학 필수 대단원.","x":853.08,"y":150.4,"level":2,"community":"life","curriculumRefs":["g2-plant-energy"],"tags":["curriculum","life"],"kind":"curriculum-unit","importance":3,"mechanism":[],"equation":"","oralPrompt":"식물과 에너지의 핵심 원리를 원초적인 개념에서부터 설명해봐.","personalRefs":[]},{"id":"photosynthesis","name":"광합성","summary":"빛 에너지를 이용해 이산화탄소를 환원하여 유기물에 화학에너지를 저장하는 과정.","x":953.08,"y":118.37,"level":3,"community":"life","curriculumRefs":["g2-plant-energy"],"tags":["curriculum","life"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"광합성을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"chloroplast","name":"엽록체","summary":"식물 세포에서 광합성이 일어나는 세포소기관.","x":976.03,"y":154.09,"level":3,"community":"life","curriculumRefs":["g2-plant-energy"],"tags":["curriculum","life"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"엽록체을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"transpiration","name":"증산","summary":"식물의 지상부에서 물이 수증기로 빠져나가는 과정.","x":950.98,"y":188.37,"level":3,"community":"life","curriculumRefs":["g2-plant-energy"],"tags":["curriculum","life"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"증산을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"stomata","name":"기공","summary":"잎 표면에서 기체와 수증기 교환을 조절하는 구멍.","x":946.36,"y":230.58,"level":3,"community":"life","curriculumRefs":["g2-plant-energy"],"tags":["curriculum","life"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"기공을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"plant-respiration","name":"식물의 세포호흡","summary":"식물도 유기물의 화학에너지를 ATP로 전환한다.","x":905.33,"y":241.48,"level":3,"community":"life","curriculumRefs":["g2-plant-energy"],"tags":["curriculum","life"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"식물의 세포호흡을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"unit-g2-animal-energy","name":"동물과 에너지","summary":"2015 개정 중학교 과학 필수 대단원.","x":735.62,"y":281.66,"level":2,"community":"life","curriculumRefs":["g2-animal-energy"],"tags":["curriculum","life"],"kind":"curriculum-unit","importance":3,"mechanism":[],"equation":"","oralPrompt":"동물과 에너지의 핵심 원리를 원초적인 개념에서부터 설명해봐.","personalRefs":[]},{"id":"digestion","name":"소화","summary":"큰 영양소 분자를 흡수 가능한 작은 분자로 분해하는 과정.","x":831.92,"y":323.51,"level":3,"community":"life","curriculumRefs":["g2-animal-energy"],"tags":["curriculum","life"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"소화을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"circulation","name":"순환","summary":"혈액이 산소·영양소·호르몬·노폐물을 운반하는 과정.","x":825.62,"y":365.5,"level":3,"community":"life","curriculumRefs":["g2-animal-energy"],"tags":["curriculum","life"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"순환을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"gas-exchange","name":"기체 교환","summary":"확산을 통해 산소와 이산화탄소가 호흡 표면을 가로질러 이동한다.","x":784.18,"y":374.75,"level":3,"community":"life","curriculumRefs":["g2-animal-energy"],"tags":["curriculum","life"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"기체 교환을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"excretion","name":"배설","summary":"대사 노폐물을 제거하고 물·이온 균형을 조절하는 과정.","x":752.88,"y":403.44,"level":3,"community":"life","curriculumRefs":["g2-animal-energy"],"tags":["curriculum","life"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"배설을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"cellular-respiration","name":"세포호흡","summary":"유기물의 산화에서 나온 자유에너지를 ATP 합성에 연결하는 대사 과정.","x":714.84,"y":384.58,"level":3,"community":"life","curriculumRefs":["g2-animal-energy"],"tags":["curriculum","life"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"세포호흡을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"unit-g2-matter-properties","name":"물질의 특성","summary":"2015 개정 중학교 과학 필수 대단원.","x":-168.42,"y":774.75,"level":2,"community":"chemistry","curriculumRefs":["g2-matter-properties"],"tags":["curriculum","chemistry"],"kind":"curriculum-unit","importance":3,"mechanism":[],"equation":"","oralPrompt":"물질의 특성의 핵심 원리를 원초적인 개념에서부터 설명해봐.","personalRefs":[]},{"id":"density","name":"밀도","summary":"단위 부피당 질량.","x":-174.64,"y":879.57,"level":3,"community":"chemistry","curriculumRefs":["g2-matter-properties"],"tags":["curriculum","chemistry"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"밀도을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"solubility","name":"용해도","summary":"특정 온도에서 일정량 용매에 최대로 녹을 수 있는 용질의 양.","x":-216.23,"y":888.08,"level":3,"community":"chemistry","curriculumRefs":["g2-matter-properties"],"tags":["curriculum","chemistry"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"용해도을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"boiling-point","name":"끓는점","summary":"액체의 증기압이 외부압력과 같아져 액체 내부에서도 기화가 일어나는 온도.","x":-239.16,"y":852.35,"level":3,"community":"chemistry","curriculumRefs":["g2-matter-properties"],"tags":["curriculum","chemistry"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"끓는점을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"distillation","name":"증류","summary":"휘발성/끓는점 차이를 이용해 혼합물을 기화·응축으로 분리하는 방법.","x":-276.86,"y":832.81,"level":3,"community":"chemistry","curriculumRefs":["g2-matter-properties"],"tags":["curriculum","chemistry"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"증류을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"chromatography","name":"크로마토그래피","summary":"성분의 이동상·고정상 상호작용 차이로 혼합물을 분리하는 방법.","x":-272.22,"y":790.61,"level":3,"community":"chemistry","curriculumRefs":["g2-matter-properties"],"tags":["curriculum","chemistry"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"크로마토그래피을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"unit-g2-hydrosphere","name":"수권과 해수의 순환","summary":"2015 개정 중학교 과학 필수 대단원.","x":-30.52,"y":-838.13,"level":2,"community":"earth","curriculumRefs":["g2-hydrosphere"],"tags":["curriculum","earth"],"kind":"curriculum-unit","importance":3,"mechanism":[],"equation":"","oralPrompt":"수권과 해수의 순환의 핵심 원리를 원초적인 개념에서부터 설명해봐.","personalRefs":[]},{"id":"water-cycle","name":"물의 순환","summary":"증발·응결·강수·유출을 통해 지구계의 물이 이동한다.","x":-92.58,"y":-922.82,"level":3,"community":"earth","curriculumRefs":["g2-hydrosphere"],"tags":["curriculum","earth"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"물의 순환을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"salinity","name":"염분","summary":"해수에 녹아 있는 염류의 양을 나타내는 척도.","x":-65.97,"y":-955.91,"level":3,"community":"earth","curriculumRefs":["g2-hydrosphere"],"tags":["curriculum","earth"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"염분을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"ocean-current","name":"해류","summary":"바람·밀도차·지구 회전 등의 영향으로 해수가 장거리 이동하는 흐름.","x":-25.52,"y":-943.01,"level":3,"community":"earth","curriculumRefs":["g2-hydrosphere"],"tags":["curriculum","earth"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"해류을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"thermohaline","name":"밀도 순환","summary":"수온과 염분이 만든 밀도 차가 심층 해수 이동을 유도한다.","x":15.97,"y":-952.01,"level":3,"community":"earth","curriculumRefs":["g2-hydrosphere"],"tags":["curriculum","earth"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"밀도 순환을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"unit-g2-heat-life","name":"열과 우리 생활","summary":"2015 개정 중학교 과학 필수 대단원.","x":-583.23,"y":-207.28,"level":2,"community":"physics","curriculumRefs":["g2-heat-life"],"tags":["curriculum","physics"],"kind":"curriculum-unit","importance":3,"mechanism":[],"equation":"","oralPrompt":"열과 우리 생활의 핵심 원리를 원초적인 개념에서부터 설명해봐.","personalRefs":[]},{"id":"temperature","name":"온도","summary":"열평형 방향을 결정하는 상태량이며 미시적으로 입자 운동 에너지 분포와 관련된다.","x":-620.45,"y":-305.46,"level":3,"community":"physics","curriculumRefs":["g2-heat-life"],"tags":["curriculum","physics"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"온도을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"thermal-equilibrium","name":"열평형","summary":"접촉한 계 사이 순열 흐름이 없어 같은 온도에 도달한 상태.","x":-585.98,"y":-330.25,"level":3,"community":"physics","curriculumRefs":["g2-heat-life"],"tags":["curriculum","physics"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"열평형을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"specific-heat","name":"비열","summary":"단위 질량 물질의 온도를 1도 높이는 데 필요한 열량.","x":-550.44,"y":-307.03,"level":3,"community":"physics","curriculumRefs":["g2-heat-life"],"tags":["curriculum","physics"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"비열을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"heat-transfer","name":"열전달","summary":"전도·대류·복사를 통해 에너지가 온도 차를 따라 이동한다.","x":-508.05,"y":-304.63,"level":3,"community":"physics","curriculumRefs":["g2-heat-life"],"tags":["curriculum","physics"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"열전달을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"unit-g2-disaster-safety","name":"재해·재난과 안전","summary":"2015 개정 중학교 과학 필수 대단원.","x":56.89,"y":-294.56,"level":2,"community":"integration","curriculumRefs":["g2-disaster-safety"],"tags":["curriculum","integration"],"kind":"curriculum-unit","importance":3,"mechanism":[],"equation":"","oralPrompt":"재해·재난과 안전의 핵심 원리를 원초적인 개념에서부터 설명해봐.","personalRefs":[]},{"id":"earthquake","name":"지진","summary":"암석에 축적된 탄성에너지가 급격히 방출되어 지진파가 퍼지는 현상.","x":23.94,"y":-394.25,"level":3,"community":"integration","curriculumRefs":["g2-disaster-safety"],"tags":["curriculum","integration"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"지진을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"volcano","name":"화산","summary":"마그마와 화산가스가 지표로 분출하는 지질 현상.","x":59.45,"y":-417.53,"level":3,"community":"integration","curriculumRefs":["g2-disaster-safety"],"tags":["curriculum","integration"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"화산을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"weather-hazard","name":"기상 재해","summary":"태풍·호우·폭염·한파 등 대기 현상으로 인한 위험.","x":93.96,"y":-392.8,"level":3,"community":"integration","curriculumRefs":["g2-disaster-safety"],"tags":["curriculum","integration"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"기상 재해을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"risk","name":"위험도","summary":"재해의 가능성과 노출·취약성이 결합해 피해 가능성을 만든다.","x":136.21,"y":-388.57,"level":3,"community":"integration","curriculumRefs":["g2-disaster-safety"],"tags":["curriculum","integration"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"위험도을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"unit-g3-chemical-reaction-energy","name":"화학 반응의 규칙과 에너지 변화","summary":"2015 개정 중학교 과학 필수 대단원.","x":-248.44,"y":617.84,"level":2,"community":"chemistry","curriculumRefs":["g3-chemical-reaction-energy"],"tags":["curriculum","chemistry"],"kind":"curriculum-unit","importance":3,"mechanism":[],"equation":"","oralPrompt":"화학 반응의 규칙과 에너지 변화의 핵심 원리를 원초적인 개념에서부터 설명해봐.","personalRefs":[]},{"id":"chemical-reaction","name":"화학 반응","summary":"원자의 종류와 수는 보존되지만 결합과 배열이 바뀌어 새로운 물질이 생기는 변화.","x":-333.8,"y":678.99,"level":3,"community":"chemistry","curriculumRefs":["g3-chemical-reaction-energy"],"tags":["curriculum","chemistry"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"화학 반응을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"mass-conservation","name":"질량 보존","summary":"닫힌 계에서 화학반응 전후 전체 질량이 보존된다.","x":-366.6,"y":652.02,"level":3,"community":"chemistry","curriculumRefs":["g3-chemical-reaction-energy"],"tags":["curriculum","chemistry"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"질량 보존을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"reaction-equation","name":"화학 반응식","summary":"반응물과 생성물의 입자/몰 비를 계수로 나타낸 표현.","x":-353.27,"y":611.71,"level":3,"community":"chemistry","curriculumRefs":["g3-chemical-reaction-energy"],"tags":["curriculum","chemistry"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"화학 반응식을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"exothermic-endothermic","name":"발열·흡열 반응","summary":"반응 과정에서 주변으로 열을 방출하거나 흡수하는 반응.","x":-361.81,"y":570.12,"level":3,"community":"chemistry","curriculumRefs":["g3-chemical-reaction-energy"],"tags":["curriculum","chemistry"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"발열·흡열 반응을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"unit-g3-atmosphere-weather","name":"기권과 날씨","summary":"2015 개정 중학교 과학 필수 대단원.","x":140.67,"y":-796.67,"level":2,"community":"earth","curriculumRefs":["g3-atmosphere-weather"],"tags":["curriculum","earth"],"kind":"curriculum-unit","importance":3,"mechanism":[],"equation":"","oralPrompt":"기권과 날씨의 핵심 원리를 원초적인 개념에서부터 설명해봐.","personalRefs":[]},{"id":"atmosphere","name":"대기권","summary":"중력에 의해 지구 주변에 유지되는 기체층.","x":114.45,"y":-898.34,"level":3,"community":"earth","curriculumRefs":["g3-atmosphere-weather"],"tags":["curriculum","earth"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"대기권을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"air-pressure","name":"기압","summary":"위에 놓인 공기 기둥의 무게와 분자 충돌로 생기는 압력.","x":151.43,"y":-919.2,"level":3,"community":"earth","curriculumRefs":["g3-atmosphere-weather"],"tags":["curriculum","earth"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"기압을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"humidity","name":"습도","summary":"공기 중 수증기 양의 정도.","x":184.21,"y":-892.22,"level":3,"community":"earth","curriculumRefs":["g3-atmosphere-weather"],"tags":["curriculum","earth"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"습도을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"cloud","name":"구름","summary":"공기가 냉각되어 수증기가 응결/승화해 작은 물방울·얼음입자가 모인 것.","x":226.08,"y":-885.18,"level":3,"community":"earth","curriculumRefs":["g3-atmosphere-weather"],"tags":["curriculum","earth"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"구름을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"wind","name":"바람","summary":"기압경도력과 지구 회전·마찰의 영향을 받아 움직이는 공기.","x":234.6,"y":-843.58,"level":3,"community":"earth","curriculumRefs":["g3-atmosphere-weather"],"tags":["curriculum","earth"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"바람을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"front","name":"전선","summary":"성질이 다른 두 기단이 만나는 경계.","x":262.74,"y":-811.78,"level":3,"community":"earth","curriculumRefs":["g3-atmosphere-weather"],"tags":["curriculum","earth"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"전선을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"unit-g3-motion-energy","name":"운동과 에너지","summary":"2015 개정 중학교 과학 필수 대단원.","x":-429.3,"y":-121.66,"level":2,"community":"physics","curriculumRefs":["g3-motion-energy"],"tags":["curriculum","physics"],"kind":"curriculum-unit","importance":3,"mechanism":[],"equation":"","oralPrompt":"운동과 에너지의 핵심 원리를 원초적인 개념에서부터 설명해봐.","personalRefs":[]},{"id":"speed","name":"속력","summary":"이동거리를 걸린 시간으로 나눈 운동의 빠르기.","x":-427.45,"y":-226.65,"level":3,"community":"physics","curriculumRefs":["g3-motion-energy"],"tags":["curriculum","physics"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"속력을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"force-motion","name":"힘과 운동","summary":"합력은 물체의 속도 또는 방향 변화와 연결된다.","x":-386.25,"y":-236.88,"level":3,"community":"physics","curriculumRefs":["g3-motion-energy"],"tags":["curriculum","physics"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"힘과 운동을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"work","name":"일","summary":"힘이 변위를 통해 계에 에너지를 전달하는 과정.","x":-361.85,"y":-202.13,"level":3,"community":"physics","curriculumRefs":["g3-motion-energy"],"tags":["curriculum","physics"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"일을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"kinetic-energy","name":"운동에너지","summary":"운동 상태와 관련된 에너지.","x":-323.38,"y":-184.18,"level":3,"community":"physics","curriculumRefs":["g3-motion-energy"],"tags":["curriculum","physics"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"운동에너지을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"gravitational-potential","name":"중력 위치에너지","summary":"중력장 안의 위치와 관련된 에너지.","x":-326.26,"y":-141.82,"level":3,"community":"physics","curriculumRefs":["g3-motion-energy"],"tags":["curriculum","physics"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"중력 위치에너지을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"mechanical-energy","name":"역학적 에너지","summary":"운동에너지와 위치에너지의 합으로 다루는 에너지.","x":-307.63,"y":-103.67,"level":3,"community":"physics","curriculumRefs":["g3-motion-energy"],"tags":["curriculum","physics"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"역학적 에너지을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"unit-g3-stimulus-response","name":"자극과 반응","summary":"2015 개정 중학교 과학 필수 대단원.","x":560.77,"y":302.88,"level":2,"community":"life","curriculumRefs":["g3-stimulus-response"],"tags":["curriculum","life"],"kind":"curriculum-unit","importance":3,"mechanism":[],"equation":"","oralPrompt":"자극과 반응의 핵심 원리를 원초적인 개념에서부터 설명해봐.","personalRefs":[]},{"id":"neuron","name":"뉴런","summary":"막전위 변화와 시냅스를 이용해 정보를 전달하는 신경세포.","x":605.57,"y":397.85,"level":3,"community":"life","curriculumRefs":["g3-stimulus-response"],"tags":["curriculum","life"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"뉴런을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"action-potential","name":"활동전위","summary":"전압개폐성 이온통로의 순차적 작동으로 막전위가 빠르게 변화하고 전파되는 현상.","x":573.14,"y":425.26,"level":3,"community":"life","curriculumRefs":["g3-stimulus-response"],"tags":["curriculum","life"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"활동전위을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"synapse","name":"시냅스","summary":"뉴런과 다른 세포 사이에서 신호를 전달하는 접합부.","x":535.89,"y":404.89,"level":3,"community":"life","curriculumRefs":["g3-stimulus-response"],"tags":["curriculum","life"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"시냅스을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"hormone","name":"호르몬","summary":"분비되어 표적 세포의 수용체에 결합해 기능을 조절하는 신호 분자.","x":493.44,"y":405.82,"level":3,"community":"life","curriculumRefs":["g3-stimulus-response"],"tags":["curriculum","life"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"호르몬을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"homeostasis","name":"항상성","summary":"내부 상태가 목표 범위에서 유지되도록 피드백으로 조절되는 성질.","x":477.28,"y":366.56,"level":3,"community":"life","curriculumRefs":["g3-stimulus-response"],"tags":["curriculum","life"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"항상성을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"unit-g3-reproduction-genetics","name":"생식과 유전","summary":"2015 개정 중학교 과학 필수 대단원.","x":415.32,"y":203.54,"level":2,"community":"life","curriculumRefs":["g3-reproduction-genetics"],"tags":["curriculum","life"],"kind":"curriculum-unit","importance":3,"mechanism":[],"equation":"","oralPrompt":"생식과 유전의 핵심 원리를 원초적인 개념에서부터 설명해봐.","personalRefs":[]},{"id":"mitosis","name":"체세포분열","summary":"복제된 유전정보를 두 딸세포에 거의 동일하게 분배하는 분열.","x":403.87,"y":307.92,"level":3,"community":"life","curriculumRefs":["g3-reproduction-genetics"],"tags":["curriculum","life"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"체세포분열을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"meiosis","name":"감수분열","summary":"염색체 수를 절반으로 줄이고 유전적 다양성을 만드는 생식세포 형성 분열.","x":361.9,"y":314.34,"level":3,"community":"life","curriculumRefs":["g3-reproduction-genetics"],"tags":["curriculum","life"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"감수분열을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"chromosome","name":"염색체","summary":"DNA가 단백질과 함께 응축된 유전정보 구조.","x":340.79,"y":277.51,"level":3,"community":"life","curriculumRefs":["g3-reproduction-genetics"],"tags":["curriculum","life"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"염색체을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"dna","name":"DNA","summary":"염기서열로 유전정보를 저장하는 핵산.","x":304.12,"y":256.11,"level":3,"community":"life","curriculumRefs":["g3-reproduction-genetics"],"tags":["curriculum","life"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"DNA을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"gene","name":"유전자","summary":"기능성 RNA 또는 단백질 산물에 필요한 정보를 담는 DNA 구간.","x":310.86,"y":214.19,"level":3,"community":"life","curriculumRefs":["g3-reproduction-genetics"],"tags":["curriculum","life"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"유전자을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"inheritance","name":"유전","summary":"부모의 유전정보가 자손에게 전달되어 형질에 영향을 주는 현상.","x":295.8,"y":174.5,"level":3,"community":"life","curriculumRefs":["g3-reproduction-genetics"],"tags":["curriculum","life"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"유전을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"unit-g3-energy-conversion","name":"에너지 전환과 보존","summary":"2015 개정 중학교 과학 필수 대단원.","x":237,"y":-183.94,"level":2,"community":"integration","curriculumRefs":["g3-energy-conversion"],"tags":["curriculum","integration"],"kind":"curriculum-unit","importance":3,"mechanism":[],"equation":"","oralPrompt":"에너지 전환과 보존의 핵심 원리를 원초적인 개념에서부터 설명해봐.","personalRefs":[]},{"id":"energy-conservation","name":"에너지 보존","summary":"고립계의 총에너지는 형태가 바뀌어도 보존된다.","x":277.96,"y":-280.61,"level":3,"community":"integration","curriculumRefs":["g3-energy-conversion"],"tags":["curriculum","integration"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"에너지 보존을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"generator","name":"발전기","summary":"전자기 유도를 이용해 기계적 에너지를 전기에너지로 전환한다.","x":320.01,"y":-274.7,"level":3,"community":"integration","curriculumRefs":["g3-energy-conversion"],"tags":["curriculum","integration"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"발전기을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"energy-efficiency","name":"에너지 효율","summary":"투입 에너지 중 원하는 형태로 유용하게 전환된 비율.","x":329.64,"y":-233.35,"level":3,"community":"integration","curriculumRefs":["g3-energy-conversion"],"tags":["curriculum","integration"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"에너지 효율을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"renewable-energy","name":"재생에너지","summary":"태양·바람·물 등 자연적으로 지속 보충되는 흐름을 이용한 에너지.","x":358.62,"y":-202.32,"level":3,"community":"integration","curriculumRefs":["g3-energy-conversion"],"tags":["curriculum","integration"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"재생에너지을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"unit-g3-stars-universe","name":"별과 우주","summary":"2015 개정 중학교 과학 필수 대단원.","x":242.03,"y":-652.62,"level":2,"community":"earth","curriculumRefs":["g3-stars-universe"],"tags":["curriculum","earth"],"kind":"curriculum-unit","importance":3,"mechanism":[],"equation":"","oralPrompt":"별과 우주의 핵심 원리를 원초적인 개념에서부터 설명해봐.","personalRefs":[]},{"id":"stellar-color","name":"별의 색","summary":"별 표면 온도에 따른 복사 스펙트럼 차이로 색이 달라진다.","x":317.91,"y":-725.2,"level":3,"community":"earth","curriculumRefs":["g3-stars-universe"],"tags":["curriculum","earth"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"별의 색을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"stellar-brightness","name":"별의 밝기","summary":"별의 고유 광도와 거리 모두에 따라 겉보기 밝기가 달라진다.","x":354.18,"y":-703.13,"level":3,"community":"earth","curriculumRefs":["g3-stars-universe"],"tags":["curriculum","earth"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"별의 밝기을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"milky-way","name":"우리은하","summary":"태양계를 포함한 막대나선은하.","x":346.67,"y":-661.35,"level":3,"community":"earth","curriculumRefs":["g3-stars-universe"],"tags":["curriculum","earth"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"우리은하을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"universe","name":"우주","summary":"관측 가능한 모든 시공간과 물질·에너지를 포함하는 계.","x":361,"y":-621.38,"level":3,"community":"earth","curriculumRefs":["g3-stars-universe"],"tags":["curriculum","earth"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"우주을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"unit-g3-science-civilization","name":"과학기술과 인류 문명","summary":"2015 개정 중학교 과학 필수 대단원.","x":299.46,"y":17.99,"level":2,"community":"integration","curriculumRefs":["g3-science-civilization"],"tags":["curriculum","integration"],"kind":"curriculum-unit","importance":3,"mechanism":[],"equation":"","oralPrompt":"과학기술과 인류 문명의 핵심 원리를 원초적인 개념에서부터 설명해봐.","personalRefs":[]},{"id":"technology-system","name":"기술 시스템","summary":"과학 지식·공학 설계·사회적 선택이 결합된 문제해결 체계.","x":400.37,"y":-11.03,"level":3,"community":"integration","curriculumRefs":["g3-science-civilization"],"tags":["curriculum","integration"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"기술 시스템을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"sustainability","name":"지속가능성","summary":"현재 필요를 충족하면서 미래 세대의 가능성을 훼손하지 않는 방향.","x":422.24,"y":25.36,"level":3,"community":"integration","curriculumRefs":["g3-science-civilization"],"tags":["curriculum","integration"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"지속가능성을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"science-ethics","name":"과학기술 윤리","summary":"기술의 위험·이익·공정성·책임을 고려하는 판단 틀.","x":396.17,"y":58.88,"level":3,"community":"integration","curriculumRefs":["g3-science-civilization"],"tags":["curriculum","integration"],"kind":"concept","importance":2,"mechanism":[],"equation":"","oralPrompt":"과학기술 윤리을 정의만 하지 말고 왜 그런지 설명해봐.","personalRefs":[]},{"id":"stomata-opening","name":"기공 개방","summary":"공변세포의 팽압과 형태 변화로 기공의 틈이 넓어지는 과정.","x":875,"y":-40,"level":3,"community":"life","curriculumRefs":["g2-plant-energy"],"tags":["life","deep"],"kind":"concept","importance":3,"mechanism":["빛/CO₂ 상태 등 신호가 막수송을 조절한다.","용질 축적이 수분퍼텐셜을 낮춘다.","물이 들어와 팽압이 증가하고 공변세포 기하가 틈을 연다."],"equation":"","oralPrompt":"빛을 받았을 때 공변세포가 실제로 어떤 순서로 변해서 기공이 열리는지 설명해봐.","personalRefs":[]},{"id":"blue-light-signal","name":"청색광 신호","summary":"청색광 수용체 phototropin을 포함한 신호가 공변세포 원형질막 H⁺-ATPase 활성화를 촉진할 수 있다.","x":940,"y":-115,"level":4,"community":"life","curriculumRefs":["g2-plant-energy"],"tags":["life","deep"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"atp","name":"ATP","summary":"세포가 화학적 일을 결합시키는 데 널리 사용하는 자유에너지 전달 분자.","x":760,"y":-155,"level":3,"community":"life","curriculumRefs":["g2-plant-energy","g2-animal-energy"],"tags":["life","chemistry","energy"],"kind":"concept","importance":3,"mechanism":[],"equation":"ATP + H₂O → ADP + Pi","oralPrompt":"","personalRefs":[]},{"id":"hplus-atpase","name":"H⁺-ATPase","summary":"ATP 가수분해 에너지를 이용해 H⁺를 세포 밖으로 능동수송하는 막 펌프.","x":1010,"y":-185,"level":5,"community":"life","curriculumRefs":["g2-plant-energy"],"tags":["life","deep"],"kind":"concept","importance":3,"mechanism":["H⁺ 유출","막 내부의 상대적 음전하 증가","전기화학적 기울기 형성"],"equation":"ATP → ADP + Pi","oralPrompt":"","personalRefs":[]},{"id":"membrane-potential","name":"막전위","summary":"세포막 안팎의 전하 분리로 생기는 전위차.","x":1085,"y":-110,"level":4,"community":"life","curriculumRefs":["g3-stimulus-response","g2-plant-energy"],"tags":["life","physics"],"kind":"concept","importance":3,"mechanism":[],"equation":"Vₘ = Vinside − Voutside","oralPrompt":"","personalRefs":[]},{"id":"electrochemical-gradient","name":"전기화학적 기울기","summary":"농도 차와 전기적 위치에너지 차가 함께 이온 이동의 방향성을 정한다.","x":1125,"y":-30,"level":5,"community":"life","curriculumRefs":["g2-plant-energy","g3-stimulus-response"],"tags":["life","chemistry","physics"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"potassium-influx","name":"K⁺ 유입","summary":"과분극된 막과 이온 기울기에 의해 inward-rectifying K⁺ channel을 통한 K⁺ 유입이 유리해진다.","x":1085,"y":55,"level":5,"community":"life","curriculumRefs":["g2-plant-energy"],"tags":["life","deep"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"anion-accumulation","name":"음이온 축적","summary":"Cl⁻, malate²⁻ 등 음이온이 전하 균형과 삼투적으로 유효한 용질 증가에 기여한다.","x":1015,"y":115,"level":5,"community":"life","curriculumRefs":["g2-plant-energy"],"tags":["life","deep"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"water-potential","name":"수분퍼텐셜","summary":"물이 이동할 수 있는 자유에너지 상태를 나타내며 용질·압력 성분 등의 영향을 받는다.","x":925,"y":130,"level":4,"community":"life","curriculumRefs":["g2-plant-energy"],"tags":["life","chemistry"],"kind":"concept","importance":3,"mechanism":[],"equation":"Ψw = Ψs + Ψp (단순화)","oralPrompt":"","personalRefs":[]},{"id":"osmosis","name":"삼투","summary":"선택적 투과막을 사이에 둔 물의 순이동으로, 물의 퍼텐셜 차가 평형을 향해 감소한다.","x":845,"y":105,"level":3,"community":"life","curriculumRefs":["g2-plant-energy"],"tags":["life","chemistry"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"guard-cell-water-influx","name":"공변세포 물 유입","summary":"용질 축적으로 낮아진 공변세포 수분퍼텐셜 때문에 물이 세포로 들어온다.","x":805,"y":35,"level":4,"community":"life","curriculumRefs":["g2-plant-energy"],"tags":["life","deep"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"turgor-pressure","name":"팽압","summary":"세포 내부의 물이 세포벽을 밀어내며 생기는 압력.","x":805,"y":-35,"level":4,"community":"life","curriculumRefs":["g2-plant-energy"],"tags":["life","physics"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"guard-cell-wall-geometry","name":"공변세포 벽 구조","summary":"공변세포의 벽 두께·셀룰로오스 배열과 기하가 팽압 증가를 기공 틈 확대 형태로 변환한다.","x":840,"y":-105,"level":5,"community":"life","curriculumRefs":["g2-plant-energy"],"tags":["life","deep"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"thyroxine","name":"티록신 T₄","summary":"갑상샘이 주로 분비하는 갑상샘 호르몬. 여러 조직에서 대사율 조절에 관여한다.","x":650,"y":355,"level":3,"community":"life","curriculumRefs":["g3-stimulus-response"],"tags":["life","deep"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"티록신이 왜 세포호흡과 대사율을 높일 수 있는지 분자 수준 순서로 설명해봐.","personalRefs":[]},{"id":"t4-to-t3","name":"T₄→T₃","summary":"deiodinase가 T₄의 요오드를 제거해 더 활성이 큰 T₃를 생성할 수 있다.","x":735,"y":395,"level":4,"community":"life","curriculumRefs":["g3-stimulus-response"],"tags":["life","deep"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"t3-receptor","name":"갑상샘호르몬 수용체","summary":"T₃가 핵의 thyroid hormone receptor에 결합해 DNA 조절 부위와 전사 조절 복합체의 활성을 바꾼다.","x":830,"y":405,"level":5,"community":"life","curriculumRefs":["g3-stimulus-response"],"tags":["life","deep","information"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"metabolic-gene-expression","name":"대사 유전자 발현","summary":"T₃-수용체 신호가 조직에 따라 대사효소, 막수송, 미토콘드리아 기능 관련 유전자 발현을 조절한다.","x":915,"y":355,"level":5,"community":"life","curriculumRefs":["g3-stimulus-response"],"tags":["life","deep","information"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"atp-turnover","name":"ATP turnover","summary":"ATP 소비와 재합성의 속도. 대사 활동이 커지면 ATP turnover가 함께 증가한다.","x":930,"y":270,"level":4,"community":"life","curriculumRefs":["g2-animal-energy"],"tags":["life","energy"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"mitochondrial-oxidation","name":"미토콘드리아 산화대사","summary":"전자전달계와 산화적 인산화가 영양소 산화 에너지를 ATP 합성에 연결한다.","x":845,"y":225,"level":4,"community":"life","curriculumRefs":["g2-animal-energy"],"tags":["life","deep"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"oxygen-consumption","name":"산소 소비 증가","summary":"호기성 산화대사가 활발한 조직에서는 말단 전자수용체인 O₂ 소비량이 증가할 수 있다.","x":755,"y":245,"level":4,"community":"life","curriculumRefs":["g2-animal-energy"],"tags":["life","deep"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"heat-production","name":"열 생산","summary":"대사 과정에서 에너지의 일부가 열로 분산되어 체열 생성에 기여한다.","x":690,"y":285,"level":4,"community":"life","curriculumRefs":["g2-heat-life","g3-stimulus-response"],"tags":["life","physics"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"modern-physics","name":"현대물리","summary":"고전물리의 한계에서 등장한 상대론·양자역학·핵물리의 연결 영역.","x":-785,"y":-320,"level":1,"community":"modern","curriculumRefs":[],"tags":["modern"],"kind":"region","importance":5,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"quantum-mechanics","name":"양자역학","summary":"미시계의 상태를 복소 확률진폭과 연산자 구조로 기술하는 이론.","x":-980,"y":-405,"level":2,"community":"modern","curriculumRefs":["g1-light-waves","g2-matter-composition"],"tags":["modern","strength"],"kind":"landmark","importance":5,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"photon","name":"광자","summary":"전자기장의 양자화된 에너지·운동량 전달 단위.","x":-900,"y":-505,"level":3,"community":"modern","curriculumRefs":["g1-light-waves"],"tags":["modern"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"photoelectric-effect","name":"광전효과","summary":"빛의 주파수가 임계값 이상일 때 물질에서 전자가 방출되는 현상으로 빛 에너지의 양자화를 보여준다.","x":-1015,"y":-545,"level":4,"community":"modern","curriculumRefs":["g1-light-waves"],"tags":["modern"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"double-slit","name":"이중슬릿","summary":"양자 개체의 경로 가능성들이 중첩되어 간섭무늬를 만드는 대표 실험.","x":-1090,"y":-460,"level":4,"community":"modern","curriculumRefs":["g1-light-waves"],"tags":["modern"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"wave-particle","name":"파동-입자 이중성","summary":"양자 개체가 상황에 따라 고전적 파동/입자 어느 하나만으로는 설명되지 않는 성질.","x":-1070,"y":-360,"level":4,"community":"modern","curriculumRefs":["g1-light-waves"],"tags":["modern"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"wavefunction","name":"파동함수 ψ","summary":"양자계 상태를 나타내는 복소 함수로, |ψ|²가 측정 확률밀도와 연결된다.","x":-1000,"y":-295,"level":5,"community":"modern","curriculumRefs":[],"tags":["modern"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"uncertainty","name":"불확정성","summary":"비가환 관측량의 분산에는 상태가 만족해야 하는 하한이 존재한다.","x":-900,"y":-285,"level":5,"community":"modern","curriculumRefs":[],"tags":["modern"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"quantized-levels","name":"양자화된 에너지 준위","summary":"결합된 양자계에서 허용 에너지가 연속이 아닌 이산값을 가질 수 있다.","x":-845,"y":-370,"level":4,"community":"modern","curriculumRefs":["g2-matter-composition"],"tags":["modern"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"special-relativity","name":"특수상대성이론","summary":"관성계에서 물리법칙의 동일성과 진공 빛의 속도 불변을 바탕으로 시공간 측정을 재구성한다.","x":-690,"y":-500,"level":2,"community":"modern","curriculumRefs":["g1-light-waves","g3-motion-energy"],"tags":["modern","strength"],"kind":"landmark","importance":5,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"light-speed-invariance","name":"빛의 속도 불변","summary":"모든 관성계가 진공의 빛 속도 c를 동일하게 측정한다는 특수상대론의 기본 원리.","x":-600,"y":-575,"level":3,"community":"modern","curriculumRefs":["g1-light-waves"],"tags":["modern"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"relativity-simultaneity","name":"동시성의 상대성","summary":"공간적으로 떨어진 두 사건의 동시 여부가 관성계에 따라 달라질 수 있다.","x":-515,"y":-530,"level":4,"community":"modern","curriculumRefs":[],"tags":["modern"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"time-dilation","name":"시간 지연","summary":"상대운동하는 시계 사이에서 경과시간 측정값이 달라지는 효과.","x":-500,"y":-440,"level":4,"community":"modern","curriculumRefs":[],"tags":["modern"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"length-contraction","name":"길이 수축","summary":"상대운동 방향의 길이 측정값이 관성계에 따라 달라지는 효과.","x":-555,"y":-355,"level":4,"community":"modern","curriculumRefs":[],"tags":["modern"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"mass-energy","name":"질량-에너지","summary":"정지질량은 E₀=mc²의 정지에너지와 연결된다.","x":-650,"y":-315,"level":4,"community":"modern","curriculumRefs":[],"tags":["modern"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"general-relativity","name":"일반상대성이론","summary":"중력을 시공간 곡률과 자유낙하 운동으로 기술하는 이론.","x":-725,"y":-250,"level":3,"community":"modern","curriculumRefs":[],"tags":["modern"],"kind":"concept","importance":4,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"equivalence-principle","name":"등가원리","summary":"국소적으로 균일한 중력장과 가속 좌표계의 효과를 구별할 수 없다는 일반상대론의 출발점.","x":-805,"y":-215,"level":4,"community":"modern","curriculumRefs":[],"tags":["modern"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"personal-world","name":"현준 탐구","summary":"자소서·학생부·실제 프로젝트에서 반드시 깊게 방어해야 하는 개인 탐구 영역.","x":460,"y":600,"level":1,"community":"personal","curriculumRefs":[],"tags":["personal"],"kind":"region","importance":5,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":["자소서","생기부"]},{"id":"basketball-friction-study","name":"농구공 수분·미끄러짐","summary":"손 접촉면을 단순화한 반죽의 수분 조건과 농구공 1회전 후 위치 차 Δx를 비교한 탐구.","x":590,"y":650,"level":2,"community":"personal","curriculumRefs":[],"tags":["personal","science"],"kind":"landmark","importance":5,"mechanism":["수분 조건을 독립변인으로 조절","Δx를 미끄러짐의 대리지표로 사용","반복·모형 한계를 함께 해석"],"equation":"","oralPrompt":"Δx가 왜 마찰계수 자체가 아닌지 설명해봐.","personalRefs":["과학 자소서"]},{"id":"delta-x-proxy","name":"Δx 대리지표","summary":"순수 구름 기준 위치와 실제 1회전 후 위치의 차이를 길이로 측정한 간접 지표.","x":700,"y":690,"level":4,"community":"personal","curriculumRefs":[],"tags":["personal","measurement"],"kind":"concept","importance":4,"mechanism":[],"equation":"Δx = x_actual − x_pure-roll","oralPrompt":"","personalRefs":["과학 자소서"]},{"id":"rolling-without-slipping","name":"순수 구름","summary":"접촉점의 순간 상대속도가 0인 구름으로 병진속도와 각속도가 v=ωR로 연결된다.","x":690,"y":610,"level":3,"community":"personal","curriculumRefs":["g3-motion-energy"],"tags":["personal","physics"],"kind":"concept","importance":4,"mechanism":[],"equation":"v = ωR","oralPrompt":"공이 미끄러지지 않고 구른다는 것을 위치와 회전각으로 어떻게 확인할까?","personalRefs":["과학 자소서"]},{"id":"tribology","name":"트라이볼로지","summary":"마찰·마모·윤활·점착을 함께 다루는 접촉 상호작용 분야.","x":610,"y":545,"level":4,"community":"personal","curriculumRefs":[],"tags":["personal","physics"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":["과학 자소서"]},{"id":"water-ethanol-distillation","name":"물–에탄올 분리","summary":"휘발성 차이를 이용한 증류 실험과 예상 밖 결과를 해석한 학생부 활동.","x":400,"y":710,"level":2,"community":"personal","curriculumRefs":["g2-matter-properties"],"tags":["personal","chemistry"],"kind":"landmark","importance":4,"mechanism":[],"equation":"","oralPrompt":"왜 물과 에탄올은 단순히 두 끓는점에서 완벽하게 분리되지 않을까?","personalRefs":["생기부"]},{"id":"bipartite-matching","name":"이분매칭","summary":"학생 집합과 좌석 집합 사이 선호 간선에서 서로 겹치지 않는 연결을 선택하는 알고리즘.","x":510,"y":775,"level":2,"community":"personal","curriculumRefs":[],"tags":["personal","math","cs"],"kind":"landmark","importance":5,"mechanism":[],"equation":"","oralPrompt":"탐욕 배정이 실패하는 가장 작은 반례를 만들어봐.","personalRefs":["수학/협업 자소서"]},{"id":"shooting-pose-analysis","name":"슈팅 자세 분석","summary":"영상에서 관절 랜드마크를 추정하고 자세를 기하학적 특징으로 비교하는 프로젝트.","x":745,"y":790,"level":2,"community":"personal","curriculumRefs":[],"tags":["personal","physics","cs"],"kind":"landmark","importance":5,"mechanism":[],"equation":"","oralPrompt":"2D 관절각만으로 3D 슛폼을 판단할 때 어떤 정보가 사라질까?","personalRefs":["진로 자소서"]},{"id":"pose-landmarks","name":"관절 랜드마크","summary":"영상 좌표계에서 어깨·팔꿈치·손목 등 관절의 위치를 추정한 점 집합.","x":855,"y":760,"level":4,"community":"personal","curriculumRefs":[],"tags":["personal","cs"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"two-view-geometry","name":"2-view 3D 기하","summary":"정면·측면 등 서로 다른 투영에서 얻은 방향 정보를 결합해 3차원 관계를 추정하는 기하.","x":835,"y":845,"level":4,"community":"personal","curriculumRefs":[],"tags":["personal","math","physics"],"kind":"concept","importance":4,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"wireless-transmission","name":"소형 무선 송수신","summary":"블루투스·와이파이 없이 RF 패킷으로 오디오 데이터를 전달하는 학생 프로젝트.","x":345,"y":815,"level":2,"community":"personal","curriculumRefs":["g2-electric-magnetic"],"tags":["personal","physics","engineering"],"kind":"landmark","importance":5,"mechanism":[],"equation":"","oralPrompt":"수신 실패가 RF 세기보다 처리시간 병목 때문인지 어떻게 실험으로 구분할까?","personalRefs":["진로 자소서"]},{"id":"packet-timing","name":"패킷 타이밍","summary":"패킷 길이·전송 간격·수신 처리 시간이 손실률에 영향을 주는 시간 구조.","x":250,"y":780,"level":4,"community":"personal","curriculumRefs":[],"tags":["personal","engineering"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]},{"id":"signal-noise","name":"신호·잡음","summary":"원하는 정보 성분과 측정/전송을 방해하는 불확실한 성분을 구분하는 개념.","x":250,"y":855,"level":4,"community":"personal","curriculumRefs":["g2-electric-magnetic"],"tags":["personal","physics"],"kind":"concept","importance":3,"mechanism":[],"equation":"","oralPrompt":"","personalRefs":[]}],"edges":[{"source":"matter","target":"interaction","type":"REQUIRES","strength":5},{"source":"interaction","target":"energy","type":"CONVERTS_TO","strength":5},{"source":"energy","target":"conservation","type":"DERIVED_FROM","strength":4},{"source":"gradient","target":"interaction","type":"CAUSES","strength":4},{"source":"equilibrium","target":"gradient","type":"CONTRASTS_WITH","strength":3},{"source":"information","target":"feedback","type":"REQUIRES","strength":3},{"source":"space-time","target":"interaction","type":"APPLIES_TO","strength":3},{"source":"probability","target":"information","type":"APPLIES_TO","strength":3},{"source":"energy","target":"physics-world","type":"APPLIES_TO","strength":4},{"source":"matter","target":"chemistry-world","type":"APPLIES_TO","strength":4},{"source":"information","target":"life-world","type":"APPLIES_TO","strength":4},{"source":"energy","target":"earth-world","type":"APPLIES_TO","strength":4},{"source":"interaction","target":"integration-world","type":"APPLIES_TO","strength":4},{"source":"earth-world","target":"unit-g1-earth-crust","type":"PART_OF","strength":3},{"source":"unit-g1-earth-crust","target":"earth-layers","type":"PART_OF","strength":2},{"source":"unit-g1-earth-crust","target":"minerals","type":"PART_OF","strength":2},{"source":"unit-g1-earth-crust","target":"rocks","type":"PART_OF","strength":2},{"source":"unit-g1-earth-crust","target":"plate-tectonics","type":"PART_OF","strength":2},{"source":"physics-world","target":"unit-g1-forces","type":"PART_OF","strength":3},{"source":"unit-g1-forces","target":"gravity","type":"PART_OF","strength":2},{"source":"unit-g1-forces","target":"elastic-force","type":"PART_OF","strength":2},{"source":"unit-g1-forces","target":"friction","type":"PART_OF","strength":2},{"source":"unit-g1-forces","target":"buoyancy","type":"PART_OF","strength":2},{"source":"life-world","target":"unit-g1-biodiversity","type":"PART_OF","strength":3},{"source":"unit-g1-biodiversity","target":"species","type":"PART_OF","strength":2},{"source":"unit-g1-biodiversity","target":"classification","type":"PART_OF","strength":2},{"source":"unit-g1-biodiversity","target":"biodiversity","type":"PART_OF","strength":2},{"source":"chemistry-world","target":"unit-g1-gases","type":"PART_OF","strength":3},{"source":"unit-g1-gases","target":"gas-pressure","type":"PART_OF","strength":2},{"source":"unit-g1-gases","target":"boyle-law","type":"PART_OF","strength":2},{"source":"unit-g1-gases","target":"charles-law","type":"PART_OF","strength":2},{"source":"unit-g1-gases","target":"particle-thermal-motion","type":"PART_OF","strength":2},{"source":"chemistry-world","target":"unit-g1-state-change","type":"PART_OF","strength":3},{"source":"unit-g1-state-change","target":"phase-change","type":"PART_OF","strength":2},{"source":"unit-g1-state-change","target":"latent-heat","type":"PART_OF","strength":2},{"source":"unit-g1-state-change","target":"melting-boiling","type":"PART_OF","strength":2},{"source":"unit-g1-state-change","target":"condensation-freezing","type":"PART_OF","strength":2},{"source":"physics-world","target":"unit-g1-light-waves","type":"PART_OF","strength":3},{"source":"unit-g1-light-waves","target":"reflection","type":"PART_OF","strength":2},{"source":"unit-g1-light-waves","target":"refraction","type":"PART_OF","strength":2},{"source":"unit-g1-light-waves","target":"lenses","type":"PART_OF","strength":2},{"source":"unit-g1-light-waves","target":"wave","type":"PART_OF","strength":2},{"source":"unit-g1-light-waves","target":"sound","type":"PART_OF","strength":2},{"source":"integration-world","target":"unit-g1-science-future","type":"PART_OF","strength":3},{"source":"unit-g1-science-future","target":"scientific-model","type":"PART_OF","strength":2},{"source":"unit-g1-science-future","target":"science-engineering","type":"PART_OF","strength":2},{"source":"unit-g1-science-future","target":"measurement","type":"PART_OF","strength":2},{"source":"chemistry-world","target":"unit-g2-matter-composition","type":"PART_OF","strength":3},{"source":"unit-g2-matter-composition","target":"atom","type":"PART_OF","strength":2},{"source":"unit-g2-matter-composition","target":"molecule","type":"PART_OF","strength":2},{"source":"unit-g2-matter-composition","target":"ion","type":"PART_OF","strength":2},{"source":"unit-g2-matter-composition","target":"element","type":"PART_OF","strength":2},{"source":"physics-world","target":"unit-g2-electric-magnetic","type":"PART_OF","strength":3},{"source":"unit-g2-electric-magnetic","target":"electric-charge","type":"PART_OF","strength":2},{"source":"unit-g2-electric-magnetic","target":"electric-current","type":"PART_OF","strength":2},{"source":"unit-g2-electric-magnetic","target":"voltage","type":"PART_OF","strength":2},{"source":"unit-g2-electric-magnetic","target":"resistance","type":"PART_OF","strength":2},{"source":"unit-g2-electric-magnetic","target":"series-parallel","type":"PART_OF","strength":2},{"source":"unit-g2-electric-magnetic","target":"magnetic-field","type":"PART_OF","strength":2},{"source":"unit-g2-electric-magnetic","target":"electromagnetic-induction","type":"PART_OF","strength":2},{"source":"earth-world","target":"unit-g2-solar-system","type":"PART_OF","strength":3},{"source":"unit-g2-solar-system","target":"earth-rotation","type":"PART_OF","strength":2},{"source":"unit-g2-solar-system","target":"earth-revolution","type":"PART_OF","strength":2},{"source":"unit-g2-solar-system","target":"moon-phases","type":"PART_OF","strength":2},{"source":"unit-g2-solar-system","target":"eclipse","type":"PART_OF","strength":2},{"source":"unit-g2-solar-system","target":"solar-system","type":"PART_OF","strength":2},{"source":"life-world","target":"unit-g2-plant-energy","type":"PART_OF","strength":3},{"source":"unit-g2-plant-energy","target":"photosynthesis","type":"PART_OF","strength":2},{"source":"unit-g2-plant-energy","target":"chloroplast","type":"PART_OF","strength":2},{"source":"unit-g2-plant-energy","target":"transpiration","type":"PART_OF","strength":2},{"source":"unit-g2-plant-energy","target":"stomata","type":"PART_OF","strength":2},{"source":"unit-g2-plant-energy","target":"plant-respiration","type":"PART_OF","strength":2},{"source":"life-world","target":"unit-g2-animal-energy","type":"PART_OF","strength":3},{"source":"unit-g2-animal-energy","target":"digestion","type":"PART_OF","strength":2},{"source":"unit-g2-animal-energy","target":"circulation","type":"PART_OF","strength":2},{"source":"unit-g2-animal-energy","target":"gas-exchange","type":"PART_OF","strength":2},{"source":"unit-g2-animal-energy","target":"excretion","type":"PART_OF","strength":2},{"source":"unit-g2-animal-energy","target":"cellular-respiration","type":"PART_OF","strength":2},{"source":"chemistry-world","target":"unit-g2-matter-properties","type":"PART_OF","strength":3},{"source":"unit-g2-matter-properties","target":"density","type":"PART_OF","strength":2},{"source":"unit-g2-matter-properties","target":"solubility","type":"PART_OF","strength":2},{"source":"unit-g2-matter-properties","target":"boiling-point","type":"PART_OF","strength":2},{"source":"unit-g2-matter-properties","target":"distillation","type":"PART_OF","strength":2},{"source":"unit-g2-matter-properties","target":"chromatography","type":"PART_OF","strength":2},{"source":"earth-world","target":"unit-g2-hydrosphere","type":"PART_OF","strength":3},{"source":"unit-g2-hydrosphere","target":"water-cycle","type":"PART_OF","strength":2},{"source":"unit-g2-hydrosphere","target":"salinity","type":"PART_OF","strength":2},{"source":"unit-g2-hydrosphere","target":"ocean-current","type":"PART_OF","strength":2},{"source":"unit-g2-hydrosphere","target":"thermohaline","type":"PART_OF","strength":2},{"source":"physics-world","target":"unit-g2-heat-life","type":"PART_OF","strength":3},{"source":"unit-g2-heat-life","target":"temperature","type":"PART_OF","strength":2},{"source":"unit-g2-heat-life","target":"thermal-equilibrium","type":"PART_OF","strength":2},{"source":"unit-g2-heat-life","target":"specific-heat","type":"PART_OF","strength":2},{"source":"unit-g2-heat-life","target":"heat-transfer","type":"PART_OF","strength":2},{"source":"integration-world","target":"unit-g2-disaster-safety","type":"PART_OF","strength":3},{"source":"unit-g2-disaster-safety","target":"earthquake","type":"PART_OF","strength":2},{"source":"unit-g2-disaster-safety","target":"volcano","type":"PART_OF","strength":2},{"source":"unit-g2-disaster-safety","target":"weather-hazard","type":"PART_OF","strength":2},{"source":"unit-g2-disaster-safety","target":"risk","type":"PART_OF","strength":2},{"source":"chemistry-world","target":"unit-g3-chemical-reaction-energy","type":"PART_OF","strength":3},{"source":"unit-g3-chemical-reaction-energy","target":"chemical-reaction","type":"PART_OF","strength":2},{"source":"unit-g3-chemical-reaction-energy","target":"mass-conservation","type":"PART_OF","strength":2},{"source":"unit-g3-chemical-reaction-energy","target":"reaction-equation","type":"PART_OF","strength":2},{"source":"unit-g3-chemical-reaction-energy","target":"exothermic-endothermic","type":"PART_OF","strength":2},{"source":"earth-world","target":"unit-g3-atmosphere-weather","type":"PART_OF","strength":3},{"source":"unit-g3-atmosphere-weather","target":"atmosphere","type":"PART_OF","strength":2},{"source":"unit-g3-atmosphere-weather","target":"air-pressure","type":"PART_OF","strength":2},{"source":"unit-g3-atmosphere-weather","target":"humidity","type":"PART_OF","strength":2},{"source":"unit-g3-atmosphere-weather","target":"cloud","type":"PART_OF","strength":2},{"source":"unit-g3-atmosphere-weather","target":"wind","type":"PART_OF","strength":2},{"source":"unit-g3-atmosphere-weather","target":"front","type":"PART_OF","strength":2},{"source":"physics-world","target":"unit-g3-motion-energy","type":"PART_OF","strength":3},{"source":"unit-g3-motion-energy","target":"speed","type":"PART_OF","strength":2},{"source":"unit-g3-motion-energy","target":"force-motion","type":"PART_OF","strength":2},{"source":"unit-g3-motion-energy","target":"work","type":"PART_OF","strength":2},{"source":"unit-g3-motion-energy","target":"kinetic-energy","type":"PART_OF","strength":2},{"source":"unit-g3-motion-energy","target":"gravitational-potential","type":"PART_OF","strength":2},{"source":"unit-g3-motion-energy","target":"mechanical-energy","type":"PART_OF","strength":2},{"source":"life-world","target":"unit-g3-stimulus-response","type":"PART_OF","strength":3},{"source":"unit-g3-stimulus-response","target":"neuron","type":"PART_OF","strength":2},{"source":"unit-g3-stimulus-response","target":"action-potential","type":"PART_OF","strength":2},{"source":"unit-g3-stimulus-response","target":"synapse","type":"PART_OF","strength":2},{"source":"unit-g3-stimulus-response","target":"hormone","type":"PART_OF","strength":2},{"source":"unit-g3-stimulus-response","target":"homeostasis","type":"PART_OF","strength":2},{"source":"life-world","target":"unit-g3-reproduction-genetics","type":"PART_OF","strength":3},{"source":"unit-g3-reproduction-genetics","target":"mitosis","type":"PART_OF","strength":2},{"source":"unit-g3-reproduction-genetics","target":"meiosis","type":"PART_OF","strength":2},{"source":"unit-g3-reproduction-genetics","target":"chromosome","type":"PART_OF","strength":2},{"source":"unit-g3-reproduction-genetics","target":"dna","type":"PART_OF","strength":2},{"source":"unit-g3-reproduction-genetics","target":"gene","type":"PART_OF","strength":2},{"source":"unit-g3-reproduction-genetics","target":"inheritance","type":"PART_OF","strength":2},{"source":"integration-world","target":"unit-g3-energy-conversion","type":"PART_OF","strength":3},{"source":"unit-g3-energy-conversion","target":"energy-conservation","type":"PART_OF","strength":2},{"source":"unit-g3-energy-conversion","target":"generator","type":"PART_OF","strength":2},{"source":"unit-g3-energy-conversion","target":"energy-efficiency","type":"PART_OF","strength":2},{"source":"unit-g3-energy-conversion","target":"renewable-energy","type":"PART_OF","strength":2},{"source":"earth-world","target":"unit-g3-stars-universe","type":"PART_OF","strength":3},{"source":"unit-g3-stars-universe","target":"stellar-color","type":"PART_OF","strength":2},{"source":"unit-g3-stars-universe","target":"stellar-brightness","type":"PART_OF","strength":2},{"source":"unit-g3-stars-universe","target":"milky-way","type":"PART_OF","strength":2},{"source":"unit-g3-stars-universe","target":"universe","type":"PART_OF","strength":2},{"source":"integration-world","target":"unit-g3-science-civilization","type":"PART_OF","strength":3},{"source":"unit-g3-science-civilization","target":"technology-system","type":"PART_OF","strength":2},{"source":"unit-g3-science-civilization","target":"sustainability","type":"PART_OF","strength":2},{"source":"unit-g3-science-civilization","target":"science-ethics","type":"PART_OF","strength":2},{"source":"particle-thermal-motion","target":"temperature","type":"EXPLAINS","strength":4},{"source":"particle-thermal-motion","target":"gas-pressure","type":"EXPLAINS","strength":4},{"source":"gas-pressure","target":"boyle-law","type":"DERIVED_FROM","strength":3},{"source":"particle-thermal-motion","target":"phase-change","type":"EXPLAINS","strength":3},{"source":"energy","target":"latent-heat","type":"APPLIES_TO","strength":3},{"source":"electric-charge","target":"electric-current","type":"REQUIRES","strength":4},{"source":"voltage","target":"electric-current","type":"CAUSES","strength":3},{"source":"electric-current","target":"magnetic-field","type":"CAUSES","strength":4},{"source":"magnetic-field","target":"electromagnetic-induction","type":"REQUIRES","strength":4},{"source":"wave","target":"reflection","type":"EXPLAINS","strength":3},{"source":"wave","target":"refraction","type":"EXPLAINS","strength":3},{"source":"refraction","target":"lenses","type":"APPLIES_TO","strength":3},{"source":"wave","target":"sound","type":"EXAMPLE_OF","strength":3},{"source":"gravity","target":"earth-revolution","type":"CAUSES","strength":3},{"source":"gravity","target":"solar-system","type":"CAUSES","strength":3},{"source":"earth-revolution","target":"moon-phases","type":"CONTRASTS_WITH","strength":1},{"source":"energy","target":"photosynthesis","type":"CONVERTS_TO","strength":4},{"source":"photosynthesis","target":"plant-respiration","type":"CONTRASTS_WITH","strength":2},{"source":"cellular-respiration","target":"energy","type":"CONVERTS_TO","strength":5},{"source":"gas-exchange","target":"cellular-respiration","type":"REQUIRES","strength":3},{"source":"digestion","target":"cellular-respiration","type":"REQUIRES","strength":3},{"source":"density","target":"buoyancy","type":"EXPLAINS","strength":2},{"source":"gradient","target":"heat-transfer","type":"CAUSES","strength":3},{"source":"heat-transfer","target":"thermal-equilibrium","type":"CAUSES","strength":3},{"source":"particle-thermal-motion","target":"temperature","type":"EXPLAINS","strength":4},{"source":"plate-tectonics","target":"earthquake","type":"CAUSES","strength":3},{"source":"plate-tectonics","target":"volcano","type":"CAUSES","strength":3},{"source":"thermal-equilibrium","target":"weather-hazard","type":"CONTRASTS_WITH","strength":1},{"source":"air-pressure","target":"wind","type":"CAUSES","strength":4},{"source":"humidity","target":"cloud","type":"REQUIRES","strength":3},{"source":"front","target":"weather-hazard","type":"APPLIES_TO","strength":2},{"source":"water-cycle","target":"cloud","type":"CAUSES","strength":3},{"source":"ocean-current","target":"weather-hazard","type":"APPLIES_TO","strength":1},{"source":"force-motion","target":"kinetic-energy","type":"APPLIES_TO","strength":2},{"source":"work","target":"energy","type":"CONVERTS_TO","strength":4},{"source":"kinetic-energy","target":"mechanical-energy","type":"PART_OF","strength":3},{"source":"gravitational-potential","target":"mechanical-energy","type":"PART_OF","strength":3},{"source":"energy-conservation","target":"mechanical-energy","type":"APPLIES_TO","strength":4},{"source":"information","target":"dna","type":"APPLIES_TO","strength":4},{"source":"dna","target":"gene","type":"PART_OF","strength":4},{"source":"dna","target":"chromosome","type":"PART_OF","strength":3},{"source":"chromosome","target":"mitosis","type":"REQUIRES","strength":3},{"source":"chromosome","target":"meiosis","type":"REQUIRES","strength":3},{"source":"meiosis","target":"inheritance","type":"REQUIRES","strength":3},{"source":"feedback","target":"homeostasis","type":"EXPLAINS","strength":4},{"source":"neuron","target":"action-potential","type":"REQUIRES","strength":3},{"source":"action-potential","target":"synapse","type":"CAUSES","strength":3},{"source":"hormone","target":"homeostasis","type":"REGULATES","strength":3},{"source":"electromagnetic-induction","target":"generator","type":"APPLIES_TO","strength":4},{"source":"generator","target":"energy-conservation","type":"APPLIES_TO","strength":3},{"source":"science-engineering","target":"technology-system","type":"APPLIES_TO","strength":3},{"source":"measurement","target":"scientific-model","type":"REQUIRES","strength":2},{"source":"scientific-model","target":"risk","type":"APPLIES_TO","strength":2},{"source":"stomata","target":"stomata-opening","type":"PART_OF","strength":4},{"source":"blue-light-signal","target":"hplus-atpase","type":"CAUSES","strength":4},{"source":"atp","target":"hplus-atpase","type":"REQUIRES","strength":5},{"source":"hplus-atpase","target":"membrane-potential","type":"CAUSES","strength":5},{"source":"membrane-potential","target":"electrochemical-gradient","type":"PART_OF","strength":4},{"source":"electrochemical-gradient","target":"potassium-influx","type":"CAUSES","strength":5},{"source":"potassium-influx","target":"anion-accumulation","type":"REQUIRES","strength":2},{"source":"anion-accumulation","target":"water-potential","type":"CAUSES","strength":4},{"source":"potassium-influx","target":"water-potential","type":"CAUSES","strength":4},{"source":"water-potential","target":"osmosis","type":"CAUSES","strength":5},{"source":"osmosis","target":"guard-cell-water-influx","type":"CAUSES","strength":5},{"source":"guard-cell-water-influx","target":"turgor-pressure","type":"CAUSES","strength":5},{"source":"turgor-pressure","target":"guard-cell-wall-geometry","type":"REQUIRES","strength":4},{"source":"guard-cell-wall-geometry","target":"stomata-opening","type":"CAUSES","strength":5},{"source":"energy","target":"atp","type":"CONVERTS_TO","strength":5},{"source":"gradient","target":"electrochemical-gradient","type":"EXAMPLE_OF","strength":4},{"source":"hormone","target":"thyroxine","type":"EXAMPLE_OF","strength":3},{"source":"thyroxine","target":"t4-to-t3","type":"CONVERTS_TO","strength":4},{"source":"t4-to-t3","target":"t3-receptor","type":"REQUIRES","strength":5},{"source":"t3-receptor","target":"metabolic-gene-expression","type":"REGULATES","strength":5},{"source":"metabolic-gene-expression","target":"atp-turnover","type":"REGULATES","strength":4},{"source":"metabolic-gene-expression","target":"mitochondrial-oxidation","type":"REGULATES","strength":4},{"source":"atp-turnover","target":"cellular-respiration","type":"REQUIRES","strength":4},{"source":"mitochondrial-oxidation","target":"cellular-respiration","type":"PART_OF","strength":5},{"source":"cellular-respiration","target":"oxygen-consumption","type":"REQUIRES","strength":4},{"source":"cellular-respiration","target":"heat-production","type":"CAUSES","strength":3},{"source":"cellular-respiration","target":"atp","type":"CAUSES","strength":5},{"source":"wave","target":"modern-physics","type":"APPLIES_TO","strength":2},{"source":"atom","target":"modern-physics","type":"APPLIES_TO","strength":2},{"source":"modern-physics","target":"quantum-mechanics","type":"PART_OF","strength":4},{"source":"modern-physics","target":"special-relativity","type":"PART_OF","strength":4},{"source":"photon","target":"photoelectric-effect","type":"EXPLAINS","strength":4},{"source":"wave","target":"double-slit","type":"APPLIES_TO","strength":3},{"source":"double-slit","target":"wave-particle","type":"EXPLAINS","strength":4},{"source":"wave-particle","target":"wavefunction","type":"DERIVED_FROM","strength":3},{"source":"probability","target":"wavefunction","type":"APPLIES_TO","strength":4},{"source":"wavefunction","target":"uncertainty","type":"APPLIES_TO","strength":2},{"source":"atom","target":"quantized-levels","type":"EXPLAINS","strength":3},{"source":"quantized-levels","target":"quantum-mechanics","type":"PART_OF","strength":3},{"source":"refraction","target":"light-speed-invariance","type":"CONTRASTS_WITH","strength":1},{"source":"light-speed-invariance","target":"special-relativity","type":"REQUIRES","strength":5},{"source":"special-relativity","target":"relativity-simultaneity","type":"CAUSES","strength":4},{"source":"relativity-simultaneity","target":"time-dilation","type":"DERIVED_FROM","strength":3},{"source":"special-relativity","target":"length-contraction","type":"DERIVED_FROM","strength":3},{"source":"special-relativity","target":"mass-energy","type":"DERIVED_FROM","strength":4},{"source":"space-time","target":"special-relativity","type":"APPLIES_TO","strength":5},{"source":"special-relativity","target":"general-relativity","type":"REQUIRES","strength":3},{"source":"equivalence-principle","target":"general-relativity","type":"REQUIRES","strength":5},{"source":"space-time","target":"general-relativity","type":"APPLIES_TO","strength":5},{"source":"personal-world","target":"basketball-friction-study","type":"PART_OF","strength":4},{"source":"personal-world","target":"water-ethanol-distillation","type":"PART_OF","strength":3},{"source":"personal-world","target":"bipartite-matching","type":"PART_OF","strength":3},{"source":"personal-world","target":"shooting-pose-analysis","type":"PART_OF","strength":4},{"source":"personal-world","target":"wireless-transmission","type":"PART_OF","strength":4},{"source":"basketball-friction-study","target":"delta-x-proxy","type":"MEASURED_BY","strength":5},{"source":"basketball-friction-study","target":"rolling-without-slipping","type":"REQUIRES","strength":5},{"source":"basketball-friction-study","target":"friction","type":"APPLIES_TO","strength":4},{"source":"basketball-friction-study","target":"tribology","type":"APPLIES_TO","strength":3},{"source":"rolling-without-slipping","target":"kinetic-energy","type":"APPLIES_TO","strength":2},{"source":"water-ethanol-distillation","target":"distillation","type":"APPLIES_TO","strength":5},{"source":"water-ethanol-distillation","target":"boiling-point","type":"REQUIRES","strength":4},{"source":"shooting-pose-analysis","target":"pose-landmarks","type":"REQUIRES","strength":5},{"source":"pose-landmarks","target":"two-view-geometry","type":"APPLIES_TO","strength":4},{"source":"two-view-geometry","target":"space-time","type":"APPLIES_TO","strength":1},{"source":"wireless-transmission","target":"electromagnetic-induction","type":"CONTRASTS_WITH","strength":1},{"source":"wireless-transmission","target":"wave","type":"APPLIES_TO","strength":3},{"source":"wireless-transmission","target":"packet-timing","type":"REQUIRES","strength":4},{"source":"wireless-transmission","target":"signal-noise","type":"REQUIRES","strength":3},{"source":"bipartite-matching","target":"information","type":"APPLIES_TO","strength":2},{"source":"matter","target":"unit-g1-earth-crust","type":"EXPLAINS","strength":2},{"source":"interaction","target":"unit-g1-forces","type":"EXPLAINS","strength":2},{"source":"information","target":"unit-g1-biodiversity","type":"EXPLAINS","strength":2},{"source":"particle-thermal-motion","target":"unit-g1-gases","type":"EXPLAINS","strength":2},{"source":"energy","target":"unit-g1-state-change","type":"EXPLAINS","strength":2},{"source":"interaction","target":"unit-g1-light-waves","type":"EXPLAINS","strength":2},{"source":"scientific-model","target":"unit-g1-science-future","type":"EXPLAINS","strength":2},{"source":"matter","target":"unit-g2-matter-composition","type":"EXPLAINS","strength":2},{"source":"electric-charge","target":"unit-g2-electric-magnetic","type":"EXPLAINS","strength":2},{"source":"gravity","target":"unit-g2-solar-system","type":"EXPLAINS","strength":2},{"source":"energy","target":"unit-g2-plant-energy","type":"EXPLAINS","strength":2},{"source":"energy","target":"unit-g2-animal-energy","type":"EXPLAINS","strength":2},{"source":"matter","target":"unit-g2-matter-properties","type":"EXPLAINS","strength":2},{"source":"gradient","target":"unit-g2-hydrosphere","type":"EXPLAINS","strength":2},{"source":"energy","target":"unit-g2-heat-life","type":"EXPLAINS","strength":2},{"source":"risk","target":"unit-g2-disaster-safety","type":"EXPLAINS","strength":2},{"source":"conservation","target":"unit-g3-chemical-reaction-energy","type":"EXPLAINS","strength":2},{"source":"gradient","target":"unit-g3-atmosphere-weather","type":"EXPLAINS","strength":2},{"source":"energy","target":"unit-g3-motion-energy","type":"EXPLAINS","strength":2},{"source":"feedback","target":"unit-g3-stimulus-response","type":"EXPLAINS","strength":2},{"source":"information","target":"unit-g3-reproduction-genetics","type":"EXPLAINS","strength":2},{"source":"conservation","target":"unit-g3-energy-conversion","type":"EXPLAINS","strength":2},{"source":"space-time","target":"unit-g3-stars-universe","type":"EXPLAINS","strength":2},{"source":"science-engineering","target":"unit-g3-science-civilization","type":"EXPLAINS","strength":2}]};
+
+const LEVEL_THRESHOLDS = [0.5,0.8,1.4,2.2,3.3,4.6];
+
+function buildIndexes(graph) {
+  const nodesById = new Map(graph.nodes.map(node => [node.id,node]));
+  const adjacency = new Map(graph.nodes.map(node => [node.id, []]));
+  for (const edge of graph.edges) {
+    if (adjacency.has(edge.source)) adjacency.get(edge.source).push(edge.target);
+    if (adjacency.has(edge.target)) adjacency.get(edge.target).push(edge.source);
+  }
+  return {nodesById,adjacency};
+}
+
+function validateGraph(graph) {
+  const nodeIds = new Set();
+  const duplicateNodeIds = [];
+  for (const node of graph.nodes) {
+    if (nodeIds.has(node.id)) duplicateNodeIds.push(node.id);
+    nodeIds.add(node.id);
+  }
+  const danglingEdges = graph.edges.filter(edge => !nodeIds.has(edge.source) || !nodeIds.has(edge.target));
+  const mapped = new Set(graph.nodes.flatMap(node => node.curriculumRefs ?? []));
+  const missingCurriculumUnits = graph.curriculumUnits.filter(unit => !mapped.has(unit.id)).map(unit => unit.id);
+  return {duplicateNodeIds,danglingEdges,missingCurriculumUnits};
+}
+
+function zoomThresholdForLevel(level) {
+  return LEVEL_THRESHOLDS[Math.min(Math.max(level ?? 0,0),LEVEL_THRESHOLDS.length-1)];
+}
+
+function getVisibleNodes(graph, zoom, filters = {}) {
+  const query=(filters.query ?? '').trim().toLowerCase();
+  return graph.nodes.filter(node => {
+    if (zoom < zoomThresholdForLevel(node.level)) return false;
+    if (filters.community && filters.community !== 'all' && node.community !== filters.community) return false;
+    if (filters.curriculum === true && !(node.curriculumRefs?.length)) return false;
+    if (filters.personal === true && !(node.tags?.includes('personal'))) return false;
+    if (filters.modern === true && !(node.tags?.includes('modern') || node.community === 'modern')) return false;
+    if (query) {
+      const haystack=[node.name,node.summary,...(node.tags??[])].join(' ').toLowerCase();
+      if (!haystack.includes(query)) return false;
+    }
+    return true;
+  });
+}
+
+function shortestPath(graph, fromId, toId) {
+  if (fromId === toId) return [fromId];
+  const {nodesById,adjacency}=buildIndexes(graph);
+  if (!nodesById.has(fromId) || !nodesById.has(toId)) return [];
+  const queue=[fromId];
+  const prev=new Map([[fromId,null]]);
+  for (let head=0; head<queue.length; head++) {
+    const current=queue[head];
+    for (const next of adjacency.get(current) ?? []) {
+      if (prev.has(next)) continue;
+      prev.set(next,current);
+      if (next === toId) {
+        const path=[];
+        let cursor=toId;
+        while (cursor !== null) { path.push(cursor); cursor=prev.get(cursor); }
+        return path.reverse();
+      }
+      queue.push(next);
+    }
+  }
+  return [];
+}
+
+const COMMUNITY_TOKEN = {
+  foundations: '--map-community-foundation',
+  physics: '--map-community-physics',
+  chemistry: '--map-community-chemistry',
+  life: '--map-community-biology',
+  biology: '--map-community-biology',
+  earth: '--map-community-earth',
+  integration: '--map-community-foundation',
+  modern: '--map-community-modern',
+  personal: '--map-community-personal',
+  math: '--map-community-math',
+};
+
+const LABEL_THRESHOLDS = [0.5, 1.15, 1.85, 2.75, 4.05, 5.15];
+
+function worldToScreenPoint(point, state) {
+  return { x: point.x * state.zoom + state.panX, y: point.y * state.zoom + state.panY };
+}
+
+function screenToWorldPoint(point, state) {
+  return { x: (point.x - state.panX) / state.zoom, y: (point.y - state.panY) / state.zoom };
+}
+
+function nodeGlyph(node) {
+  if (node.kind === 'landmark' || node.community === 'foundations') return 'ring';
+  if (node.community === 'personal' || node.tags?.includes('personal')) return 'diamond';
+  if (node.community === 'modern' || node.tags?.includes('modern')) return 'rounded-square';
+  return 'circle';
+}
+
+function labelVisibility(node, zoom, selected = false) {
+  if (selected) return true;
+  if (node.kind === 'landmark' || (node.importance ?? 0) >= 5) return true;
+  const level = Math.min(Math.max(node.level ?? 0, 0), LABEL_THRESHOLDS.length - 1);
+  return zoom >= LABEL_THRESHOLDS[level];
+}
+
+function nodeRadius(node, zoom) {
+  const base = 3 + (node.importance ?? 1) * 1.45;
+  return Math.max(3.3, Math.min(base * Math.sqrt(Math.max(zoom, 0.7)), 22));
+}
+
+function roundedRect(ctx, x, y, width, height, radius) {
+  const safeRadius = Math.min(radius, width / 2, height / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + safeRadius, y);
+  ctx.arcTo(x + width, y, x + width, y + height, safeRadius);
+  ctx.arcTo(x + width, y + height, x, y + height, safeRadius);
+  ctx.arcTo(x, y + height, x, y, safeRadius);
+  ctx.arcTo(x, y, x + width, y, safeRadius);
+  ctx.closePath();
+}
+
+function readPalette() {
+  const styles = getComputedStyle(document.documentElement);
+  const token = name => styles.getPropertyValue(name).trim();
+  return {
+    edge: token('--map-edge'),
+    edgeRelated: token('--map-edge-related'),
+    edgeDim: token('--map-edge-dim'),
+    labelBg: token('--map-label-bg'),
+    label: token('--map-label'),
+    labelDim: token('--map-label-dim'),
+    selection: token('--map-selection-ring'),
+    landmarkCore: token('--map-landmark-core'),
+    terrain: token('--map-terrain'),
+    communities: Object.fromEntries(
+      Object.entries(COMMUNITY_TOKEN).map(([community, tokenName]) => [community, token(tokenName)]),
+    ),
+  };
+}
+
+function buildShapePath(ctx, glyph, point, radius) {
+  if (glyph === 'diamond') {
+    ctx.beginPath();
+    ctx.moveTo(point.x, point.y - radius);
+    ctx.lineTo(point.x + radius, point.y);
+    ctx.lineTo(point.x, point.y + radius);
+    ctx.lineTo(point.x - radius, point.y);
+    ctx.closePath();
+    return;
+  }
+
+  if (glyph === 'rounded-square') {
+    roundedRect(ctx, point.x - radius, point.y - radius, radius * 2, radius * 2, Math.max(2, radius * 0.35));
+    return;
+  }
+
+  ctx.beginPath();
+  ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+  ctx.closePath();
+}
+
+function drawCommunityContours(ctx, nodes, state, palette) {
+  if (state.zoom > 3.4) return;
+  const groups = new Map();
+
+  for (const node of nodes) {
+    if ((node.level ?? 0) > 2) continue;
+    const point = worldToScreenPoint(node, state);
+    const group = groups.get(node.community) ?? [];
+    group.push(point);
+    groups.set(node.community, group);
+  }
+
+  ctx.save();
+  ctx.setLineDash([2, 9]);
+  ctx.lineWidth = 0.9;
+
+  for (const [community, points] of groups) {
+    if (points.length < 2) continue;
+    const centerX = points.reduce((sum, point) => sum + point.x, 0) / points.length;
+    const centerY = points.reduce((sum, point) => sum + point.y, 0) / points.length;
+    const spreadX = Math.max(64, ...points.map(point => Math.abs(point.x - centerX) + 44));
+    const spreadY = Math.max(52, ...points.map(point => Math.abs(point.y - centerY) + 38));
+    ctx.globalAlpha = Math.max(0.045, 0.095 - state.zoom * 0.012);
+    ctx.strokeStyle = palette.communities[community] || palette.labelDim;
+    ctx.beginPath();
+    ctx.ellipse(centerX, centerY, spreadX, spreadY, -0.08, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+function drawNode(ctx, node, point, radius, color, state, palette) {
+  const selected = node.id === state.selectedId;
+  const neighbors = state.selectedNeighborIds ?? new Set();
+  const dimmed = state.selectedId && !selected && !neighbors.has(node.id);
+  const glyph = nodeGlyph(node);
+
+  ctx.save();
+  ctx.globalAlpha = dimmed ? 0.22 : 1;
+
+  if ((node.importance ?? 1) >= 4 || selected) {
+    ctx.shadowBlur = selected ? 24 : 11;
+    ctx.shadowColor = color;
+  }
+
+  if (glyph === 'ring') {
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = selected ? 2.4 : 1.6;
+    ctx.beginPath();
+    ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fillStyle = palette.landmarkCore;
+    ctx.beginPath();
+    ctx.arc(point.x, point.y, Math.max(2.2, radius * 0.34), 0, Math.PI * 2);
+    ctx.fill();
+  } else {
+    buildShapePath(ctx, glyph, point, radius);
+    ctx.fillStyle = color;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = palette.labelDim;
+    ctx.lineWidth = 0.7;
+    ctx.stroke();
+  }
+
+  if (selected) {
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = palette.selection;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(point.x, point.y, radius + 4.5, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  if (labelVisibility(node, state.zoom, selected)) {
+    const importance = node.importance ?? 1;
+    const fontSize = Math.max(10.5, Math.min(16, importance >= 4 ? 12.2 + state.zoom * 0.42 : 10.4 + state.zoom * 0.28));
+    const weight = importance >= 4 ? 650 : 520;
+    ctx.font = `${weight} ${fontSize}px ui-sans-serif, system-ui, -apple-system, "Noto Sans KR", sans-serif`;
+    const text = node.name;
+    const textWidth = ctx.measureText(text).width;
+    const x = point.x + radius + 8;
+    const y = point.y + 4;
+
+    if (importance >= 4 || selected) {
+      roundedRect(ctx, x - 4, y - fontSize, textWidth + 8, fontSize + 7, 5);
+      ctx.fillStyle = palette.labelBg;
+      ctx.fill();
+    }
+
+    ctx.fillStyle = selected ? palette.label : dimmed ? palette.labelDim : palette.label;
+    ctx.fillText(text, x, y);
+  }
+
+  ctx.restore();
+}
+
+function createRenderer(canvas) {
+  const ctx = canvas.getContext('2d');
+
+  function resize() {
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    const width = Math.max(1, Math.floor(rect.width * dpr));
+    const height = Math.max(1, Math.floor(rect.height * dpr));
+    if (canvas.width !== width || canvas.height !== height) {
+      canvas.width = width;
+      canvas.height = height;
+    }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return rect;
+  }
+
+  function render(state) {
+    const rect = resize();
+    const palette = readPalette();
+    ctx.clearRect(0, 0, rect.width, rect.height);
+
+    const nodes = state.visibleNodes;
+    const visibleIds = new Set(nodes.map(node => node.id));
+    const selected = state.selectedId;
+    const selectedNeighbors = state.selectedNeighborIds ?? new Set();
+
+    const center = worldToScreenPoint({ x: 0, y: 0 }, state);
+    const gradient = ctx.createRadialGradient(
+      center.x,
+      center.y,
+      16,
+      center.x,
+      center.y,
+      Math.min(rect.width, rect.height) * 0.56,
+    );
+    gradient.addColorStop(0, palette.terrain);
+    gradient.addColorStop(1, 'transparent');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, rect.width, rect.height);
+
+    drawCommunityContours(ctx, nodes, state, palette);
+
+    for (const edge of state.graph.edges) {
+      if (!visibleIds.has(edge.source) || !visibleIds.has(edge.target)) continue;
+      const source = state.nodesById.get(edge.source);
+      const target = state.nodesById.get(edge.target);
+      const sourcePoint = worldToScreenPoint(source, state);
+      const targetPoint = worldToScreenPoint(target, state);
+      const related = !selected
+        || edge.source === selected
+        || edge.target === selected
+        || (selectedNeighbors.has(edge.source) && selectedNeighbors.has(edge.target));
+
+      ctx.strokeStyle = !selected ? palette.edge : related ? palette.edgeRelated : palette.edgeDim;
+      ctx.lineWidth = related
+        ? Math.min(2.2, 0.42 + (edge.strength ?? 1) * 0.17)
+        : 0.45;
+      ctx.beginPath();
+      ctx.moveTo(sourcePoint.x, sourcePoint.y);
+      ctx.lineTo(targetPoint.x, targetPoint.y);
+      ctx.stroke();
+    }
+
+    for (const node of nodes) {
+      const point = worldToScreenPoint(node, state);
+      if (point.x < -80 || point.y < -80 || point.x > rect.width + 80 || point.y > rect.height + 80) continue;
+      const radius = nodeRadius(node, state.zoom);
+      const color = palette.communities[node.community] || palette.label;
+      drawNode(ctx, node, point, radius, color, state, palette);
+    }
+  }
+
+  function hitTest(screenX, screenY, state, nodes = state.visibleNodes) {
+    let best = null;
+    let bestDistance = Number.POSITIVE_INFINITY;
+    for (const node of nodes) {
+      const point = worldToScreenPoint(node, state);
+      const distance = Math.hypot(screenX - point.x, screenY - point.y);
+      const threshold = Math.max(11, nodeRadius(node, state.zoom) + 8);
+      if (distance <= threshold && distance < bestDistance) {
+        best = node;
+        bestDistance = distance;
+      }
+    }
+    return best;
+  }
+
+  return {
+    render,
+    hitTest,
+    screenToWorld: (x, y, state) => screenToWorldPoint({ x, y }, state),
+  };
+}
+
+const DIRECTION_VECTORS = {
+  right: { x: 1, y: 0 },
+  left: { x: -1, y: 0 },
+  up: { x: 0, y: -1 },
+  down: { x: 0, y: 1 },
+};
+
+function directionalNeighbor(nodes, selectedId, direction) {
+  const origin = nodes.find(node => node.id === selectedId);
+  const vector = DIRECTION_VECTORS[direction];
+  if (!origin || !vector) return null;
+
+  let best = null;
+  let bestScore = Number.POSITIVE_INFINITY;
+
+  for (const node of nodes) {
+    if (node.id === selectedId) continue;
+    const dx = node.x - origin.x;
+    const dy = node.y - origin.y;
+    const forward = dx * vector.x + dy * vector.y;
+    if (forward <= 0) continue;
+
+    const lateral = Math.abs(dx * vector.y - dy * vector.x);
+    const distance = Math.hypot(dx, dy);
+    const score = distance + lateral * 0.8;
+    if (score < bestScore) {
+      best = node;
+      bestScore = score;
+    }
+  }
+
+  return best;
+}
+
+function resolveThemePreference(explicitPreference, systemDark) {
+  if (explicitPreference === 'light' || explicitPreference === 'dark') {
+    return explicitPreference;
+  }
+  return systemDark ? 'dark' : 'light';
+}
+
+function zoomBand(zoom) {
+  if (zoom < 1.2) return 'WORLD';
+  if (zoom < 2.0) return 'CONTINENT';
+  if (zoom < 3.1) return 'REGION';
+  if (zoom < 4.5) return 'CITY';
+  return 'STREET';
+}
+
+function nextZoom(current, delta) {
+  return Math.min(6, Math.max(0.5, current * Math.exp(delta * 0.14)));
+}
+
+const FOUNDATION_IDS = ['matter', 'energy', 'interaction', 'information', 'equilibrium', 'space-time'];
+const THEME_STORAGE_KEY = 'sjhs-memory-palace-theme';
+
+function preferredFoundationPath(nodeId) {
+  let best = [];
+  for (const target of FOUNDATION_IDS) {
+    const path = shortestPath(graph, nodeId, target);
+    if (path.length && (!best.length || path.length < best.length)) best = path;
+  }
+  return best;
+}
+
+function themeIcon(theme) {
+  if (theme === 'dark') {
+    return '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4"></circle><path d="M12 2.8v2M12 19.2v2M2.8 12h2M19.2 12h2M5.5 5.5l1.4 1.4M17.1 17.1l1.4 1.4M18.5 5.5l-1.4 1.4M6.9 17.1l-1.4 1.4"></path></svg>';
+  }
+  return '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M20.4 15.1A8.4 8.4 0 0 1 8.9 3.6 8.6 8.6 0 1 0 20.4 15.1Z"></path></svg>';
+}
+
+function init() {
+  const canvas = document.getElementById('map');
+  const details = document.getElementById('details');
+  const search = document.getElementById('search');
+  const reset = document.getElementById('reset');
+  const themeToggle = document.getElementById('theme-toggle');
+  const zoomIn = document.getElementById('zoom-in');
+  const zoomOut = document.getElementById('zoom-out');
+  const filters = document.getElementById('filters');
+  const zoomValue = document.getElementById('zoom-value');
+  const zoomLabel = document.getElementById('zoom-label');
+  const mapStatus = document.getElementById('map-status');
+  const renderer = createRenderer(canvas);
+  const { nodesById, adjacency } = buildIndexes(graph);
+  const curriculumById = new Map(graph.curriculumUnits.map(unit => [unit.id, unit]));
+
+  const state = {
+    graph,
+    nodesById,
+    zoom: 0.8,
+    panX: window.innerWidth / 2,
+    panY: window.innerHeight / 2,
+    selectedId: null,
+    selectedNeighborIds: new Set(),
+    activeFilter: 'all',
+    visibleNodes: [],
+  };
+
+  let dragging = false;
+  let startX = 0;
+  let startY = 0;
+  let startPanX = 0;
+  let startPanY = 0;
+  let moved = 0;
+  let dirty = true;
+  let statusTimer = null;
+
+  details.tabIndex = -1;
+
+  const systemTheme = window.matchMedia?.('(prefers-color-scheme: dark)');
+  let explicitTheme = null;
+  try {
+    const stored = window.localStorage?.getItem(THEME_STORAGE_KEY);
+    if (stored === 'light' || stored === 'dark') explicitTheme = stored;
+  } catch {
+    explicitTheme = null;
+  }
+
+  function currentTheme() {
+    return resolveThemePreference(explicitTheme, systemTheme?.matches ?? true);
+  }
+
+  function applyTheme() {
+    const theme = currentTheme();
+    document.documentElement.dataset.theme = theme;
+    themeToggle.innerHTML = themeIcon(theme);
+    themeToggle.setAttribute('aria-label', theme === 'dark' ? '밝은 테마로 전환' : '어두운 테마로 전환');
+    themeToggle.title = themeToggle.getAttribute('aria-label');
+    dirty = true;
+  }
+
+  function persistTheme(theme) {
+    explicitTheme = theme;
+    try {
+      window.localStorage?.setItem(THEME_STORAGE_KEY, theme);
+    } catch {
+      // file:// previews may deny storage; the session theme still works.
+    }
+    applyTheme();
+  }
+
+  function filtersForState() {
+    if (state.activeFilter === 'curriculum') return { curriculum: true };
+    if (state.activeFilter === 'personal') return { personal: true };
+    if (state.activeFilter === 'modern') return { modern: true };
+    return {};
+  }
+
+  function statusText() {
+    const selected = state.selectedId ? nodesById.get(state.selectedId) : null;
+    const selectedText = selected ? ` 선택: ${selected.name}.` : '';
+    return `${zoomBand(state.zoom)}. 확대 ${state.zoom.toFixed(2)}배. ${state.visibleNodes.length}개 개념 표시.${selectedText}`;
+  }
+
+  function announceStatus({ delayed = false } = {}) {
+    window.clearTimeout(statusTimer);
+    if (!delayed) {
+      mapStatus.textContent = statusText();
+      return;
+    }
+    statusTimer = window.setTimeout(() => {
+      mapStatus.textContent = statusText();
+    }, 180);
+  }
+
+  function refreshVisible({ announce = false } = {}) {
+    state.visibleNodes = getVisibleNodes(graph, state.zoom, filtersForState());
+    dirty = true;
+    if (announce) announceStatus();
+  }
+
+  function renderIdleDetails() {
+    details.innerHTML = `
+      <div class="inspector-idle">
+        <div class="eyebrow">MEMORY PALACE</div>
+        <h1>지식 세계지도</h1>
+        <p>확대할수록 원리의 아래층이 열린다.</p>
+        <div class="shortcut-row" aria-label="지도 조작 도움말">
+          <span><kbd>+</kbd><kbd>−</kbd> 확대</span>
+          <span><kbd>방향키</kbd> 이동</span>
+          <span><kbd>/</kbd> 검색</span>
+        </div>
+      </div>`;
+  }
+
+  function clearSelection({ renderIdle = true } = {}) {
+    state.selectedId = null;
+    state.selectedNeighborIds = new Set();
+    if (renderIdle) renderIdleDetails();
+    dirty = true;
+    announceStatus();
+  }
+
+  function setSelected(id) {
+    const node = nodesById.get(id);
+    if (!node) return;
+    state.selectedId = id;
+    state.selectedNeighborIds = new Set(adjacency.get(id) ?? []);
+    renderDetails(id);
+    dirty = true;
+    announceStatus();
+  }
+
+  function focusNode(node) {
+    if (!node) return;
+    const needed = zoomThresholdForLevel(node.level) + 0.28;
+    state.zoom = Math.max(state.zoom, Math.min(5.25, needed));
+    const targetX = window.innerWidth * (window.innerWidth > 980 ? 0.42 : 0.5);
+    const targetY = window.innerHeight * (window.innerWidth > 980 ? 0.50 : 0.42);
+    state.panX = targetX - node.x * state.zoom;
+    state.panY = targetY - node.y * state.zoom;
+    refreshVisible();
+    setSelected(node.id);
+  }
+
+  function findByQuery(rawQuery) {
+    const query = rawQuery.trim().toLowerCase();
+    if (!query) return null;
+    const scored = graph.nodes
+      .map(node => {
+        const name = node.name.toLowerCase();
+        let score = name === query ? 100 : name.startsWith(query) ? 70 : name.includes(query) ? 50 : 0;
+        if (!score && (node.tags ?? []).some(tag => String(tag).toLowerCase().includes(query))) score = 20;
+        if (!score && node.summary?.toLowerCase().includes(query)) score = 10;
+        return { node, score };
+      })
+      .filter(value => value.score)
+      .sort((a, b) => b.score - a.score || (b.node.importance ?? 0) - (a.node.importance ?? 0));
+    return scored[0]?.node ?? null;
+  }
+
+  function nodeLinks(node) {
+    return (adjacency.get(node.id) ?? [])
+      .map(id => nodesById.get(id))
+      .filter(Boolean)
+      .sort((a, b) => (b.importance ?? 0) - (a.importance ?? 0))
+      .slice(0, 8);
+  }
+
+  function renderDetails(id) {
+    const node = nodesById.get(id);
+    if (!node) return;
+    const path = preferredFoundationPath(id).map(pathId => nodesById.get(pathId)?.name).filter(Boolean);
+    const units = (node.curriculumRefs ?? []).map(ref => curriculumById.get(ref)?.name).filter(Boolean);
+    const links = nodeLinks(node);
+    const chips = [...new Set([node.community, ...units, ...(node.personalRefs ?? [])])].filter(Boolean);
+    const mechanism = node.mechanism ?? [];
+    details.innerHTML = `
+      <div class="inspector-head">
+        <div>
+          <div class="eyebrow">${node.kind === 'landmark' ? 'LANDMARK' : node.tags?.includes('personal') ? 'PERSONAL DEEP ZONE' : 'KNOWLEDGE NODE'}</div>
+          <h1>${node.name}</h1>
+        </div>
+        <button class="icon-button inspector-close" type="button" data-action="clear-selection" aria-label="개념 상세 닫기" title="개념 상세 닫기">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="m7 7 10 10M17 7 7 17"></path></svg>
+        </button>
+      </div>
+      <p>${node.summary || ''}</p>
+      <div class="meta">${chips.map(chip => `<span class="chip">${chip}</span>`).join('')}</div>
+      ${path.length > 1 ? `<h2>원초 원리로 내려가기</h2><div class="path">${path.map((part, index) => `${index ? '<b>←</b>' : ''}<span>${part}</span>`).join('')}</div>` : ''}
+      ${mechanism.length ? `<h2>메커니즘</h2><div class="mechanism">${mechanism.map((part, index) => `<div class="step"><b>${String(index + 1).padStart(2, '0')}</b>&nbsp; ${part}</div>`).join('')}</div>` : ''}
+      ${node.equation ? `<h2>관계식</h2><div class="equation">${node.equation}</div>` : ''}
+      ${links.length ? `<h2>직접 연결</h2><div class="related-nodes">${links.map(link => `<button type="button" data-node="${link.id}" class="related-node">${link.name}</button>`).join('')}</div>` : ''}
+      ${node.oralPrompt ? `<h2>출석면담</h2><div class="oral">${node.oralPrompt}</div>` : ''}
+    `;
+  }
+
+  function resetFilterButtons(activeFilter) {
+    [...filters.querySelectorAll('button[data-filter]')].forEach(button => {
+      const isActive = button.dataset.filter === activeFilter;
+      button.classList.toggle('active', isActive);
+      button.setAttribute('aria-pressed', String(isActive));
+    });
+  }
+
+  function resetView() {
+    state.zoom = 0.8;
+    state.panX = window.innerWidth / 2;
+    state.panY = window.innerHeight / 2;
+    state.activeFilter = 'all';
+    search.value = '';
+    resetFilterButtons('all');
+    refreshVisible();
+    clearSelection();
+    canvas.focus({ preventScroll: true });
+  }
+
+  function zoomAt(screenX, screenY, delta, { announce = true } = {}) {
+    const world = renderer.screenToWorld(screenX, screenY, state);
+    const zoom = nextZoom(state.zoom, delta);
+    state.zoom = zoom;
+    state.panX = screenX - world.x * zoom;
+    state.panY = screenY - world.y * zoom;
+    refreshVisible();
+    if (announce) announceStatus();
+  }
+
+  function zoomAtCenter(delta) {
+    const rect = canvas.getBoundingClientRect();
+    zoomAt(rect.width / 2, rect.height / 2, delta);
+  }
+
+  function nearestVisibleToViewportCenter() {
+    if (!state.visibleNodes.length) return null;
+    const rect = canvas.getBoundingClientRect();
+    const center = renderer.screenToWorld(rect.width / 2, rect.height / 2, state);
+    return state.visibleNodes.reduce((best, node) => {
+      const distance = Math.hypot(node.x - center.x, node.y - center.y);
+      return !best || distance < best.distance ? { node, distance } : best;
+    }, null)?.node ?? null;
+  }
+
+  function keyboardMove(direction) {
+    const current = state.selectedId ? nodesById.get(state.selectedId) : nearestVisibleToViewportCenter();
+    if (!current) return;
+    if (!state.selectedId) {
+      setSelected(current.id);
+      return;
+    }
+    const next = directionalNeighbor(state.visibleNodes, current.id, direction);
+    if (next) focusNode(next);
+  }
+
+  canvas.addEventListener('wheel', event => {
+    event.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    zoomAt(x, y, -event.deltaY * 0.008, { announce: false });
+    announceStatus({ delayed: true });
+  }, { passive: false });
+
+  canvas.addEventListener('pointerdown', event => {
+    dragging = true;
+    moved = 0;
+    startX = event.clientX;
+    startY = event.clientY;
+    startPanX = state.panX;
+    startPanY = state.panY;
+    canvas.setPointerCapture(event.pointerId);
+    canvas.classList.add('dragging');
+  });
+
+  canvas.addEventListener('pointermove', event => {
+    if (!dragging) return;
+    const dx = event.clientX - startX;
+    const dy = event.clientY - startY;
+    moved = Math.max(moved, Math.hypot(dx, dy));
+    state.panX = startPanX + dx;
+    state.panY = startPanY + dy;
+    dirty = true;
+  });
+
+  canvas.addEventListener('pointerup', event => {
+    if (!dragging) return;
+    dragging = false;
+    canvas.classList.remove('dragging');
+    if (moved < 6) {
+      const rect = canvas.getBoundingClientRect();
+      const hit = renderer.hitTest(event.clientX - rect.left, event.clientY - rect.top, state);
+      if (hit) setSelected(hit.id);
+      else clearSelection();
+    }
+  });
+
+  canvas.addEventListener('keydown', event => {
+    const directions = {
+      ArrowRight: 'right',
+      ArrowLeft: 'left',
+      ArrowUp: 'up',
+      ArrowDown: 'down',
+    };
+    if (directions[event.key]) {
+      event.preventDefault();
+      keyboardMove(directions[event.key]);
+      return;
+    }
+    if (event.key === '+' || event.key === '=') {
+      event.preventDefault();
+      zoomAtCenter(1);
+      return;
+    }
+    if (event.key === '-' || event.key === '_') {
+      event.preventDefault();
+      zoomAtCenter(-1);
+      return;
+    }
+    if (event.key === '0') {
+      event.preventDefault();
+      resetView();
+      return;
+    }
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      clearSelection();
+      return;
+    }
+    if (event.key === 'Enter' && state.selectedId) {
+      event.preventDefault();
+      details.focus({ preventScroll: false });
+    }
+  });
+
+  search.addEventListener('keydown', event => {
+    if (event.key === 'Enter') {
+      const node = findByQuery(search.value);
+      if (node) focusNode(node);
+      else mapStatus.textContent = `검색 결과 없음: ${search.value.trim()}`;
+    }
+    if (event.key === 'Escape') {
+      search.value = '';
+      canvas.focus({ preventScroll: true });
+    }
+  });
+
+  details.addEventListener('click', event => {
+    const nodeButton = event.target.closest('button[data-node]');
+    if (nodeButton) {
+      focusNode(nodesById.get(nodeButton.dataset.node));
+      return;
+    }
+    if (event.target.closest('[data-action="clear-selection"]')) {
+      clearSelection();
+      canvas.focus({ preventScroll: true });
+    }
+  });
+
+  zoomIn.addEventListener('click', () => zoomAtCenter(1));
+  zoomOut.addEventListener('click', () => zoomAtCenter(-1));
+  reset.addEventListener('click', resetView);
+  themeToggle.addEventListener('click', () => persistTheme(currentTheme() === 'dark' ? 'light' : 'dark'));
+
+  filters.addEventListener('click', event => {
+    const button = event.target.closest('button[data-filter]');
+    if (!button) return;
+    state.activeFilter = button.dataset.filter;
+    resetFilterButtons(state.activeFilter);
+    refreshVisible();
+    clearSelection();
+  });
+
+  window.addEventListener('keydown', event => {
+    const target = event.target;
+    const isTyping = target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target?.isContentEditable;
+    if (event.key === '/' && !isTyping) {
+      event.preventDefault();
+      search.focus({ preventScroll: true });
+      search.select();
+    }
+  });
+
+  window.addEventListener('resize', () => {
+    dirty = true;
+  });
+
+  systemTheme?.addEventListener?.('change', () => {
+    if (!explicitTheme) applyTheme();
+  });
+
+  function frame() {
+    if (dirty) {
+      renderer.render(state);
+      zoomValue.textContent = `${state.zoom.toFixed(2)}×`;
+      zoomLabel.textContent = zoomBand(state.zoom);
+      dirty = false;
+    }
+    requestAnimationFrame(frame);
+  }
+
+  applyTheme();
+  resetFilterButtons('all');
+  refreshVisible();
+  announceStatus();
+  frame();
+}
+
+if (typeof document !== 'undefined') init();
+</script>
+</body>
+</html>
