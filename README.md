@@ -1,93 +1,120 @@
 # SJHS Science Memory Palace
 
-세종과학고 출석면담 준비를 위한 **First Principles + Memory Palace** 과학 지식지도입니다.
+세종과학고 출석면담을 준비하면서 과학 개념을 과목별 목록으로 외우기보다, **서로 연결된 하나의 공간처럼 기억하려고 만든 지식지도**입니다.
 
-## Live
+물리·화학·생명·지구과학을 따로 끊지 않고, 원초 원리에서 현상·교과 개념·실험·심화 내용으로 이어지게 구성했습니다.
 
-https://rudwpahs.github.io/SJHS/
+Live: `https://rudwpahs.github.io/SJHS/`
 
-## Product rules
-
-- 기존 canonical node의 공간 위치는 기억 좌표이므로 자동 재배치하지 않습니다.
-- 원초 원리에서 현상·교과 개념·실험·심화로 이어지는 구조를 우선합니다.
-- 오개념은 canonical knowledge node로 저장하지 않습니다.
-- 2015 개정 중학교 과학의 24개 대단원 coverage를 유지합니다.
-- 물리/화학/생명/지구과학은 칸막이보다 실제 개념 관계로 연결합니다.
-- 의미 확대는 `WORLD → CONTINENT → REGION → CITY → STREET` 5단계를 반복하며, 하위 개념이 있는 노드는 다시 하나의 local WORLD가 될 수 있습니다.
-
-## Current snapshot
+## 현재 데이터
 
 - 198 concepts
 - 291 relations
-- 24/24 middle-school science major units mapped
-- orphan curriculum units: 0
-- dangling edges: 0
-- recursive semantic focus scopes over immutable canonical coordinates
-- guard-cell opening and thyroxine mechanisms
-- quantum/relativity landmarks
-- personal research landmarks
+- 중학교 과학 24/24 대단원 연결
+- orphan curriculum unit 0
+- dangling edge 0
 
-## Canonical source
+## Memory Palace의 핵심 규칙
 
-현재 편집 가능한 source of truth는 `src/SJHS_Memory_Palace_UIUX.html`입니다.
+개념의 위치는 단순한 UI 배치가 아니라 기억 좌표로 사용합니다. 그래서 semantic zoom을 하더라도 기존 node의 `x`, `y` 좌표를 자동으로 다시 배치하지 않습니다.
 
-- size: 167,375 bytes
-- SHA-256: `47bc095f766b788a56eb1de4a92061c2467fab108dc62395530ed68c10fbaa06`
+## 그래프 구성 알고리즘
 
-루트의 과거 `index.html` / `sjhs-payload-*.js` 파일은 구조 복원 이전의 legacy snapshot이며 더 이상 Pages 배포 입력으로 사용하지 않습니다. 현재 배포는 canonical source를 검증하고 `dist/`를 새로 생성합니다.
-
-Verification commands:
-
-```bash
-npm test          # 42 automated tests
-npm run audit     # source, graph, accessibility and dependency gates
-npm run build     # four-chunk Pages package -> dist/
-npm run verify    # all gates + byte-for-byte payload restoration
+```text
+canonical concept node
+   ↓
+각 node의 고정 x / y 위치 유지
+   ↓
+relation edge 연결
+   ↓
+PART_OF 관계를 우선해 의미 계층 파생
+   ↓
+현재 focus scope 안에 들어오는 node 계산
+   ↓
+좌표는 그대로 두고 해당 scope만 화면에 표시
 ```
+
+즉, zoom할 때 graph 자체를 바꾸는 게 아니라 **같은 canonical graph에서 보여줄 범위만 바꿉니다.**
 
 ## Recursive semantic zoom
 
-현재 지도는 canonical graph를 재배치하지 않고 UI-only semantic hierarchy를 파생합니다.
+의미 확대 단계는 다음처럼 반복됩니다.
 
-- `PART_OF`를 우선적인 계층 관계로 사용합니다.
-- 선택(selection)과 내부 진입(drill-in)을 분리합니다.
-- Inspector의 `이 개념 안으로`, `Shift+Enter`, STREET 단계에서의 추가 확대를 통해 local WORLD로 진입할 수 있습니다.
-- `Escape` 또는 `한 단계 위로`로 이전 scope로 돌아갑니다.
-- 검색과 교차 개념 링크는 현재 scope 밖의 canonical 위치로 이동할 수 있습니다.
-- focus scope를 바꿔도 기존 node의 `x`, `y` 값은 변경하지 않습니다.
+```text
+WORLD → CONTINENT → REGION → CITY → STREET
+```
 
-## UI/UX
+STREET에 도착한 뒤에도 그 개념 아래에 더 세부 구조가 있다면 해당 node를 다시 하나의 local WORLD처럼 열 수 있습니다.
 
-The current UI follows the project [`SKILL.md`](./SKILL.md) and the checked UI/UX Pro Max / design-system / ui-styling guidance:
-- accessibility-first
-- visible keyboard focus
-- >=44px interactive targets
-- keyboard alternatives for map navigation
-- semantic light/dark theme tokens
-- reduced-motion support
-- SVG structural icons
-- fixed spatial landmarks for Memory Palace recall
+진입 과정은:
 
-Design system: [`design-system/sjhs-memory-palace/MASTER.md`](./design-system/sjhs-memory-palace/MASTER.md)
+```text
+node 선택
+   ↓
+선택한 node의 PART_OF 하위 관계 탐색
+   ↓
+local scope 생성
+   ↓
+기존 canonical coordinate를 새 scope에 투영
+   ↓
+현재 scope만 렌더링
+```
 
-## Pages release flow
+`Escape` 또는 `한 단계 위로`를 누르면 이전 scope stack으로 돌아갑니다. 검색이나 교차 링크는 현재 scope 밖의 canonical 위치로 바로 이동할 수 있습니다.
 
-A push to `main` runs `.github/workflows/pages.yml`:
+## 데이터 검증 알고리즘
 
-1. checkout
-2. Node.js 20 setup
-3. `npm run verify`
-4. upload generated `dist/`
-5. deploy that verified artifact to GitHub Pages
+빌드 전에 graph가 깨지지 않았는지 검사합니다.
 
-This prevents a stale root payload from being deployed instead of the current canonical source.
+```text
+canonical source 읽기
+   ↓
+node id uniqueness 검사
+   ↓
+edge의 from / to가 실제 node인지 검사
+   ↓
+24개 curriculum unit coverage 검사
+   ↓
+접근성 / dependency gate 검사
+   ↓
+dist 생성
+   ↓
+생성된 payload를 다시 복원해 원본과 일치하는지 확인
+```
 
-## Verification snapshot
+## Source of truth
 
-Recursive semantic zoom feature verification:
-- 42/42 automated tests including semantic-navigation review regression
-- graph remains 198 concepts / 291 relations / 24 curriculum units
-- canonical coordinates are unchanged by focus operations
-- UI audit and generated payload round-trip are required before deployment
+현재 편집 가능한 canonical source는:
 
-Current curriculum metrics are generated into `dist/coverage-report.json` during the build.
+`src/SJHS_Memory_Palace_UIUX.html`
+
+루트에 남아 있는 과거 `index.html` / `sjhs-payload-*`는 legacy snapshot이고 Pages 배포 입력으로 사용하지 않습니다.
+
+## 검증
+
+```bash
+npm test
+npm run audit
+npm run build
+npm run verify
+```
+
+`npm run verify`는 테스트, graph 상태, 접근성 gate, build와 payload round-trip을 함께 확인합니다.
+
+## 조작
+
+- node 클릭 — 선택
+- `이 개념 안으로` / `Shift+Enter` — 하위 scope 진입
+- `Escape` — 한 단계 위로
+- 검색 — 현재 위치와 관계없이 canonical node 탐색
+
+## UI 원칙
+
+- keyboard focus를 항상 보이게 함
+- interactive target 최소 44px
+- map navigation의 keyboard 대안 제공
+- light / dark semantic token 사용
+- reduced-motion 지원
+- 색 하나만으로 의미를 전달하지 않음
+
+디자인 시스템은 `design-system/sjhs-memory-palace/MASTER.md`를 기준으로 합니다.
